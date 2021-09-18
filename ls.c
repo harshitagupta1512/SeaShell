@@ -22,7 +22,6 @@ int processCommand(char* command, char dirName[max_size][max_size], int* dir_siz
         }
     }
 
-
     if(size == 0) {
 
         return 0;
@@ -71,9 +70,9 @@ int processCommand(char* command, char dirName[max_size][max_size], int* dir_siz
                 continue;
             }
             else if(strcmp(p, "..") == 0) {
-                char parent[max_size];
-                findParent(parent, currDir);
-                strcpy(dirName[*dir_size], parent);
+                //char parent[max_size];
+                //findParent(parent, currDir);
+                strcpy(dirName[*dir_size], "..");
                 (*dir_size)+=1;
             }
             else if(strcmp(p, "~") == 0) {
@@ -136,6 +135,77 @@ void getPermissions(struct stat buf, char perm[11])
 
 }
 
+struct LSL_info{
+
+    char permissions[11];
+    unsigned int numLinks;
+
+    unsigned int userID;
+    unsigned int groupID;
+    char userName[max_size];
+    char groupName[max_size];
+
+    unsigned long int size;
+    char date[max_size];
+    unsigned long int numBlocks;
+
+};
+
+
+int getFileDetails(char* fileName, struct LSL_info* fileInfo)
+{
+    struct stat statbuf;
+    struct passwd *p;
+    struct group *g;
+
+    int x = stat(fileName, &statbuf);
+    if(x != 0)
+    {
+        printf(RED "Error: %s: Invalid File/Directory name\n", fileName);
+        return 0;
+    }
+    fileInfo->userID = statbuf.st_uid;
+    fileInfo->groupID = statbuf.st_gid;
+    p = getpwuid(fileInfo->userID);
+    strcpy(fileInfo->userName, p->pw_name);
+    g = getgrgid(fileInfo->groupID);
+    strcpy(fileInfo->groupName, g->gr_name);
+
+    fileInfo->numLinks = statbuf.st_nlink;
+    fileInfo->size = statbuf.st_size;
+    struct timespec t;
+    t = statbuf.st_ctim;
+
+    struct tm *properFormatTime;
+    properFormatTime = localtime(&t.tv_sec);
+
+    int fileMonth = properFormatTime->tm_mon + 1;
+    int fileYear = properFormatTime->tm_year +1900;
+    time_t tn = time(0);
+    struct tm* now = localtime(&tn);
+
+    int currYear = now->tm_year + 1900;
+    int currMonth = now->tm_mon + 1;
+
+    if(currYear > fileYear)
+    {
+        strftime(fileInfo->date, 24, "%b   %d   %Y", localtime(&(statbuf.st_ctime)));
+    }
+    else
+    {
+        if(currMonth - fileMonth > 6)
+            strftime(fileInfo->date, 24, "%b   %d   %Y", localtime(&(statbuf.st_ctime)));
+        else
+            strftime(fileInfo->date, 24, "%b   %d   %H:%M", localtime(&(statbuf.st_ctime)));
+    }
+
+
+    getPermissions(statbuf, fileInfo->permissions);
+    fileInfo->numBlocks = statbuf.st_blocks;
+    return 1;
+
+}
+
 void ls(char* command, char* home)
 {
     char currDir[max_size];
@@ -144,55 +214,42 @@ void ls(char* command, char* home)
     int isA = 0;
     int isL = 0;
 
-    char dirName[max_size][max_size]; //MULTIPLE DIRECTORY NAMES
+    char dirName[max_size][max_size]; //MULTIPLE DIRECTORY/FILE NAMES
     int dir_size = 0;
 
     int x = 0;
     x = processCommand(command, dirName, &dir_size, &isA, &isL, currDir, home);
 
     if(x == 0)
-        printf(RED "Invalid command\n");
+        printf(RED "Invalid Command\n");
 
-    long unsigned int totalBlocks = 0;
-    char permissions[11];
-    unsigned int numLinks = 0;
-    unsigned int userID;
-    unsigned int groupID;
-    char userName[max_size];
-    char groupName[max_size];
-    unsigned int size = 0;
-    char date[max_size];
+    long unsigned int totalBlocks;
     char fileName[max_size];
-    struct stat statbuf;
-    struct passwd *p;
-    struct group *g;
-    struct timespec t;  // Time of last modification
-    struct tm *properFormatTime;
 
    for( int y = 0; y < dir_size ; y++)
    {
-       totalBlocks = 0;
+       //TRAVERSING THROUGH THE DIR/FILE NAMES
 
-       //TITLE DIR_NAME
-       if(dir_size != 1 && isDirectory(dirName[y])!=1)
+       if(dir_size > 1 && isDirectory(dirName[y]) == 1)
            printf(GREEN "%s:\n",dirName[y]);
 
-       if (isDirectory(dirName[y]) == 1)
+       if ( isDirectory(dirName[y]) == 1)
        {
+           totalBlocks = 0;
            DIR *d;
            struct dirent *dir;
            d = opendir(dirName[y]);
+
            if (d)
            {
-
                if (isL == 0)
                {
                    while ((dir = readdir(d)) != NULL)
                        if (dir->d_name[0] != '.' || (dir->d_name[0] == '.' && isA == 1))
                            printf(GREEN "%s\n", dir->d_name);
-               } else
+               }
+               else
                {
-
                    while ((dir = readdir(d)) != NULL)
                        if (dir->d_name[0] != '.' || (dir->d_name[0] == '.' && isA == 1))
                        {
@@ -201,61 +258,53 @@ void ls(char* command, char* home)
                            strcat(fileName, dir->d_name);
                            fileName[strlen(dirName[y]) + strlen(dir->d_name) + 1] = '\0';
 
-                           int x = stat(fileName, &statbuf);
+                           struct LSL_info fileInfo;
+                           getFileDetails(fileName, &fileInfo);
 
-                           userID = statbuf.st_uid;
-                           groupID = statbuf.st_gid;
-                           p = getpwuid(userID);
-                           strcpy(userName, p->pw_name);
-                           g = getgrgid(groupID);
-                           strcpy(groupName, g->gr_name);
+                           printf(GREEN  "%s  %d  %s  %s  %11ld  %6s  %s\n", fileInfo.permissions, fileInfo.numLinks, fileInfo.userName,
+                                  fileInfo.groupName,
+                                  fileInfo.size, fileInfo.date, dir->d_name);
 
-                           numLinks = statbuf.st_nlink;
-                           size = statbuf.st_size;
-                           t = statbuf.st_mtim;
-                           properFormatTime = localtime(&t.tv_sec);
-                           strftime(date, 24, "%b  %d  %H:%M", properFormatTime);
-
-                           getPermissions(statbuf, permissions);
-                           totalBlocks = totalBlocks + statbuf.st_blocks;
-                           printf("\x1B[32m"  "%s  %d  %s  %s  %7d  %s  %s\n", permissions, numLinks, userName,
-                                  groupName,
-                                  size, date, dir->d_name);
-
+                           totalBlocks = totalBlocks + fileInfo.numBlocks;
                        }
 
                    printf(GREEN "Total %ld\n", totalBlocks / 2);
                }
                closedir(d);
+
            } else
                printf(RED "No such directory exists\n");
        }
        else
        {
            //dirName[y] is just a file
+
            if (isL == 0)
-                       printf(GREEN "%s\n", dirName[y]);
-           else {
-               if (dirName[y][0] != '.' || (dirName[y][0] == '.' && isA == 1)) {
+           {
+               struct stat statbuf;
+               int y = stat(fileName, &statbuf);
+               if(y != 0)
+               {
+                   printf(RED "Error: %s: Invalid File/Directory name\n", fileName);
+                   return;
+               }
+
+               printf(GREEN "%s\n", dirName[y]);
+           }
+           else
+           {
+               if (dirName[y][0] != '.' || (dirName[y][0] == '.' && isA == 1))
+               {
                    strcpy(fileName, dirName[y]);
-                   int x = stat(fileName, &statbuf);
-                   userID = statbuf.st_uid;
-                   groupID = statbuf.st_gid;
-                   p = getpwuid(userID);
-                   strcpy(userName, p->pw_name);
-                   g = getgrgid(groupID);
-                   strcpy(groupName, g->gr_name);
+                   struct LSL_info fileInfo;
+                   int x = 0;
+                   x = getFileDetails(fileName, &fileInfo);
+                   if(x == 0)
+                       return;
 
-                   numLinks = statbuf.st_nlink;
-                   size = statbuf.st_size;
-                   t = statbuf.st_mtim;
-                   properFormatTime = localtime(&t.tv_sec);
-                   strftime(date, 24, "%b  %d  %H:%M", properFormatTime);
-
-                   getPermissions(statbuf, permissions);
-                   printf("\x1B[32m"  "%s  %d  %s  %s  %7d  %s  %s\n", permissions, numLinks, userName,
-                          groupName,
-                          size, date, fileName);
+                   printf(GREEN "%s  %d  %s  %s  %11ld  %6s  %s\n", fileInfo.permissions, fileInfo.numLinks, fileInfo.userName,
+                          fileInfo.groupName,
+                          fileInfo.size, fileInfo.date, dirName[y]);
                }
            }
        }

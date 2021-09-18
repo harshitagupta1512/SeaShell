@@ -1,0 +1,20 @@
+history
+cd ..
+ls -l
+history
+echo hello
+repeat 3 echo hello
+echo hello
+history
+exit
+cd ..
+ls -l
+pwd
+cd ..
+pwd
+history 7
+cd OSN_Assi1
+pws
+pwd
+pinfo
+pinfo 50172

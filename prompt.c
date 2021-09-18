@@ -32,5 +32,5 @@ void prompt(char* home)
     strcat(finalPrompt,":");
     strcat(finalPrompt,currDir);
     strcat(finalPrompt,">");
-    printf( "\x1b[34m" "%s" ,finalPrompt);
+    printf( "\x1b[36m" "%s" ,finalPrompt);
 }

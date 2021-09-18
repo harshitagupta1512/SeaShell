@@ -23,8 +23,9 @@ void findParent(char *parent, char* currDir)
             break;
     }
 
-    int itr = 0;
-    for(int j = 0 ; j < i ; j++)
+    unsigned long int itr = 0;
+
+    for(unsigned long int j = 0 ; j < i ; j++)
     {
         parent[itr] = currDir[j];
         itr++;
@@ -38,6 +39,7 @@ void cd(char* command, char* home) {
 
     char tempLastDir[max_size];
     strcpy(tempLastDir, lastVisitedDir);
+
     char currDir[max_size];
     getcwd(currDir, max_size);
     strcpy(lastVisitedDir, currDir);
@@ -45,7 +47,7 @@ void cd(char* command, char* home) {
     int x = countSpaces(command);
 
     if (x > 1) {
-        printf("\x1B[31m" "Error - more than 1 command line arguments are not allowed for cd\n" );
+        printf(RED "Error - more than 1 command line arguments are not allowed for cd\n" );
         return;
     }
 
@@ -64,6 +66,7 @@ void cd(char* command, char* home) {
 
     if (strcmp(command,"cd ..") == 0) //go to the parent directory of the current directory
     {
+        /*
         char parent[max_size];
         findParent(parent, currDir);
         if(strcmp( parent ,"") == 0)
@@ -72,14 +75,26 @@ void cd(char* command, char* home) {
         if( d < 0 )
             printf( "\x1B[31m" "Error encountered");
         return;
+        */
+        chdir("..");
+        return;
     }
 
     if(strcmp(command,"cd -") == 0)
     {
         //go to the last visited directory
-        chdir(tempLastDir);
-        printf("%s\n",tempLastDir);
-        return;
+        if(strcmp(tempLastDir, "") == 0)
+        {
+            printf(RED "Error: cd: OLDPWD not set\n");
+            return;
+        }
+        else
+        {
+            chdir(tempLastDir);
+            printf(GREEN "%s\n", tempLastDir);
+            return;
+        }
+
     }
 
     if(x == 1)
@@ -89,6 +104,6 @@ void cd(char* command, char* home) {
         strcpy(dirName, command + 3);
         int d = chdir(dirName);
         if( d < 0)
-            printf( "\x1B[31m" "Error Encountered - No such Directory\n");
+            printf( RED "Error Encountered - No such directory\n");
     }
 }
