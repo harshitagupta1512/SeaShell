@@ -98,6 +98,7 @@ int processCommand(char* command, char dirName[max_size][max_size], int* dir_siz
     return 1;
 }
 
+
 int isDirectory(const char *path)
 {
     struct stat statBuf;
@@ -220,6 +221,9 @@ void ls(char* command, char* home)
     int x = 0;
     x = processCommand(command, dirName, &dir_size, &isA, &isL, currDir, home);
 
+    //for(int i=0;i<dir_size;i++)
+     //   printf("[%d] %s \n", i, dirName[i]);
+
     if(x == 0)
         printf(RED "Invalid Command\n");
 
@@ -228,10 +232,10 @@ void ls(char* command, char* home)
 
    for( int y = 0; y < dir_size ; y++)
    {
-       //TRAVERSING THROUGH THE DIR/FILE NAMES
+       //TRAVERSING THROUGH THE MULTIPLE DIR/FILE NAMES
 
        if(dir_size > 1 && isDirectory(dirName[y]) == 1)
-           printf(GREEN "%s:\n",dirName[y]);
+           printf(YELLOW "%s:\n",dirName[y]);
 
        if ( isDirectory(dirName[y]) == 1)
        {
@@ -253,19 +257,19 @@ void ls(char* command, char* home)
                    while ((dir = readdir(d)) != NULL)
                        if (dir->d_name[0] != '.' || (dir->d_name[0] == '.' && isA == 1))
                        {
-                           strcpy(fileName, dirName[y]);
-                           strcat(fileName, "/");
-                           strcat(fileName, dir->d_name);
-                           fileName[strlen(dirName[y]) + strlen(dir->d_name) + 1] = '\0';
+                               strcpy(fileName, dirName[y]);
+                               strcat(fileName, "/");
+                               strcat(fileName, dir->d_name);
+                               fileName[strlen(dirName[y]) + strlen(dir->d_name) + 1] = '\0';
 
-                           struct LSL_info fileInfo;
-                           getFileDetails(fileName, &fileInfo);
+                               struct LSL_info fileInfo;
+                               getFileDetails(fileName, &fileInfo);
 
-                           printf(GREEN  "%s  %d  %s  %s  %11ld  %6s  %s\n", fileInfo.permissions, fileInfo.numLinks, fileInfo.userName,
-                                  fileInfo.groupName,
-                                  fileInfo.size, fileInfo.date, dir->d_name);
+                               printf(GREEN  "%10s  %10d  %10s  %10s  %10ld  %10s  %s\n", fileInfo.permissions, fileInfo.numLinks, fileInfo.userName,
+                                      fileInfo.groupName,
+                                      fileInfo.size, fileInfo.date, dir->d_name);
 
-                           totalBlocks = totalBlocks + fileInfo.numBlocks;
+                               totalBlocks = totalBlocks + fileInfo.numBlocks;
                        }
 
                    printf(GREEN "Total %ld\n", totalBlocks / 2);
@@ -281,30 +285,30 @@ void ls(char* command, char* home)
 
            if (isL == 0)
            {
+               strcpy(fileName, dirName[y]);
                struct stat statbuf;
                int y = stat(fileName, &statbuf);
                if(y != 0)
                {
                    printf(RED "Error: %s: Invalid File/Directory name\n", fileName);
-                   return;
                }
-
-               printf(GREEN "%s\n", dirName[y]);
+               else
+                    printf(YELLOW "%s\n", fileName);
            }
            else
            {
-               if (dirName[y][0] != '.' || (dirName[y][0] == '.' && isA == 1))
+               if (fileName[0] != '.' || (fileName[0] == '.' && isA == 1))
                {
                    strcpy(fileName, dirName[y]);
                    struct LSL_info fileInfo;
-                   int x = 0;
-                   x = getFileDetails(fileName, &fileInfo);
-                   if(x == 0)
-                       return;
-
-                   printf(GREEN "%s  %d  %s  %s  %11ld  %6s  %s\n", fileInfo.permissions, fileInfo.numLinks, fileInfo.userName,
+                   int k = 0;
+                   k = getFileDetails(fileName, &fileInfo);
+                   if(k != 0)
+                   {
+                       printf(GREEN "%10s  %10d  %10s  %10s  %10ld  %10s  %s\n", fileInfo.permissions, fileInfo.numLinks, fileInfo.userName,
                           fileInfo.groupName,
                           fileInfo.size, fileInfo.date, dirName[y]);
+                   }
                }
            }
        }

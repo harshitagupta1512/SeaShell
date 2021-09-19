@@ -16,7 +16,7 @@
 #include <signal.h>
 #include <sys/resource.h>
 
-#define max_size 500
+#define max_size 1000
 #define RED "\x1B[31m"
 #define GREEN "\x1B[32m"
 #define YELLOW "\x1b[33m"
@@ -28,6 +28,7 @@ char homeDir[max_size];
 struct proc{
     int pid;
     char procName[max_size];
+    int deleted;
 };
 
 struct proc bgProc[max_size];
@@ -89,8 +90,3 @@ Queue history;
 //----------------------------------------//
 
 #endif //OSN_ASSI2_DEF_H
-
-// CHECK IF "COMMAND" IS NOT GETTING CHANGED IN ANY OF THE CASES (FOR REPEAT)
-// WRITE README
-// ERROR HANDLING
-// COMMENTS

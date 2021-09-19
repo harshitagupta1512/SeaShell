@@ -15,6 +15,7 @@ void background(char* command)
         argumentPointers[x+1] = NULL;
         strcpy(bgProc[numBgProc].procName, argumentPointers[0]);
         numBgProc++;
+        bgProc[numBgProc].deleted = 0;
 
         pid_t pgid_parent = getpgrp();
         tcsetpgrp(STDIN_FILENO, pgid_parent);

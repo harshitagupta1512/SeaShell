@@ -77,4 +77,11 @@ process to exit. It will keep taking other user commands. When the background pr
 16. `def.h` - contains all the function declarations and macro definitions to be shared between all forementioned source files.
 
 17. `README.md` - The file you are reading now. Briefly describes the SeaShell and which file corresponds to what part of the functionality.
+
+## Assumptions/Limitations
+
+Maximum possible length of command input is `1000`.
+
+Maximum number of background processes that can be run across one session = `1000`.
+
 ----
