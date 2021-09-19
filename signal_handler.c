@@ -1,9 +1,9 @@
 #include "def.h"
 
-void signal_handler(int signal)
+void SIGCHLD_handler(int signal)
 {
     int status;
-    pid_t child_pid = waitpid(-1, &status, WNOHANG);
+    pid_t child_pid = waitpid(-1, &status, WNOHANG|WUNTRACED);
 
     if (child_pid > 0)
     {
@@ -16,8 +16,14 @@ void signal_handler(int signal)
 
         if (WEXITSTATUS(status) == EXIT_SUCCESS && WIFEXITED(status))
             printf(YELLOW "%s with pid %d exited normally\n", bgProc[i].procName, child_pid);
+
+        else if (WIFSTOPPED(status) || WIFSIGNALED(status))
+        {
+            kill(child_pid, SIGKILL);
+            printf(RED "\n%s with pid : %d stopped after receiving signal\n" , bgProc[i].procName, child_pid);
+        }
         else
-            printf(RED "---%s with pid %d exited abnormally\n", bgProc[i].procName, child_pid);
+            printf(RED "%s with pid %d exited abnormally\n", bgProc[i].procName, child_pid);
     }
 }
 

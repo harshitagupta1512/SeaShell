@@ -55,6 +55,7 @@ void getPermissions(struct stat buf, char perm[11]);
 void getProcessID(char* command, int* pid);
 void getHistory(char* command);
 void SIGINT_handler(int signal);
+void SIGCHLD_handler(int signal);
 
 //----------------QUEUE------------------//
 
@@ -81,7 +82,8 @@ void deleteQueue(Queue D);
 void printQueue(Queue D, int number);
 void load_history();
 void write_history();
-void signal_handler();
+
+
 
 Queue history;
 //----------------------------------------//

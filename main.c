@@ -95,7 +95,7 @@ int main(void)
     signal(SIGINT, SIGINT_handler);
     strcpy(lastAddedCommand ,"");
     numBgProc = 0;
-    signal(SIGCHLD, signal_handler);
+    signal(SIGCHLD, SIGCHLD_handler);
     history = initQueue();
     getcwd(homeDir, max_size);
     load_history();

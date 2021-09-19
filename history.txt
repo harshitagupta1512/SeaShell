@@ -1,20 +1,20 @@
-history
+sleep 5&
+ls
 cd ..
-ls -l
-history
+cdahsd
+cd // das
+cd ..
+cd .
+cd -
 echo hello
-repeat 3 echo hello
-echo hello
-history
-exit
+echo sdasdasd wor lllll dd q q q
+pwd dsdsd
+ls
 cd ..
-ls -l
-pwd
-cd ..
-pwd
-history 7
-cd OSN_Assi1
-pws
-pwd
-pinfo
-pinfo 50172
+vi&
+ls
+vim&
+ls
+vim&
+ls
+vim&

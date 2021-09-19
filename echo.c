@@ -1,6 +1,9 @@
 #include "def.h"
 void echo(char* command)
 {
-    strcpy(command, command+5);
-    printf("\x1B[32m" "%s\n",command);
+    char tempCommand[max_size];
+    strcpy(tempCommand, command);
+
+    strcpy(tempCommand, tempCommand + 5);
+    printf(GREEN "%s\n",tempCommand);
 }
