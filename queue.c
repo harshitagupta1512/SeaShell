@@ -114,5 +114,6 @@ void printQueue(Queue D, int number)
             }
             printf(GREEN "[%d]    %s\n", i, Curr->data);
         }
+
     }
 }

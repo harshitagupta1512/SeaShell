@@ -67,22 +67,18 @@ void pinfo(char* command)
         char line[max_size];
         fgets ( line, sizeof(line), fd);
 
-        char* token;
-        token = strtok(line, " ");
+        char* t;
+        t = strtok(line, " ");
         int itr = 1;
-        while( token != NULL )
+        while( t != NULL )
         {
             if(itr == 3)
-            {
-                strcpy(processStatus,token);
+                strcpy(processStatus,t);
 
-            }
             else if(itr == 23)
-            {
-                strcpy(vm,token);
+                strcpy(vm,t);
 
-            }
-            token = strtok(NULL, " ");
+            t= strtok(NULL, " ");
             itr++;
         }
 

@@ -1,55 +1,78 @@
 #include "def.h"
 
-void removeSpacesAndTabs(char* str)
-{
-    //REPLACE TABS BY SPACES
+void CleanUpCommand(char * str) {
     int i = 0;
-    while(str[i] != '\0')
-    {
-        if (str[i] == '\t')
-            str[i] = ' ';
-
-        i++;
-    }
-
-    //REMOVE SPACES FROM THE BEGINNING
-    unsigned long int l = strlen(str);
-    int k = 0;
-    while(str[k]==' ')
-        k++;
-
-    strcpy(str, str + k);
-    str[l - k] = '\0';
-
-    //REMOVE SPACES FROM THE END
-    unsigned long int j = strlen(str) - 1;
-    while(str[j] == ' ')
-        j--;
-
-    str[ j + 1 ] = '\0';
-
-    //REMOVE EXTRA SPACES IN BETWEEN
-    char blank[max_size];
-    int c = 0, d = 0;
-    while (str[c] != '\0')
-    {
-        if (!(str[c] == ' ' && str[c+1] == ' '))
-        {
-            blank[d] = str[c];
-            d++;
+    char output[max_size];
+    int output_iterator = 0;
+    int spaceAddedBefore = 0;
+    while (str[i] != '\0') {
+        if(str[i] != ' ' && str[i] != '\t') {
+            output[output_iterator++] = str[i++];
+            spaceAddedBefore = 0;
+            continue;
         }
-        c++;
+
+        if(str[i] == ' ') {
+            if(spaceAddedBefore == 1) {
+                i++;
+                continue;
+            }
+            else {
+                output[output_iterator++] = str[i++];
+                spaceAddedBefore = 1;
+                continue;
+            }
+        }
+
+        if(str[i] == '\t') {
+            if(spaceAddedBefore == 1) {
+                i++;
+                continue;
+            }
+            else {
+                output[output_iterator++] = ' ';
+                ++i;
+                spaceAddedBefore = 1;
+                continue;
+            }
+        }
+
+    }
+    output[output_iterator] = '\0';
+
+    int start = 0;
+
+    while(output[start] != '\0' && (output[start] == ' ' || output[start] == '\t')) {
+        ++start;
     }
 
-    blank[d] = '\0';
-    strcpy(str,blank);
+    int end = strlen(output) - 1;
+
+    while(end >= 0 && (output[end] == ' ' || output[start] == '\t')) {
+        --end;
+    }
+
+    char new_output[max_size];
+
+    int iter = 0;
+
+    for(int i = start; i <= end; ++ i) {
+        new_output[iter++] = output[i];
+    }
+    new_output[iter] = '\0';
+    strcpy(str, new_output);
 }
+
 
 void runCommand(char* currCommand) {
 
+    char tempCommand[max_size];
+    strcpy(tempCommand, currCommand);
+
     if (history->NumEle < 20)
         Inject(history, currCommand);
-    else {
+    else
+    {
         Pop(history);
         Inject(history, currCommand);
     }
@@ -79,7 +102,7 @@ void runCommand(char* currCommand) {
     else if (strcmp(currCommandName, "cd") == 0)
         cd(currCommand, homeDir);
     else if(strcmp(currCommandName,"pinfo") == 0)
-        pinfo(currCommand);
+        pinfo(tempCommand);
     else if(strcmp(currCommandName,"ls") == 0)
         ls(currCommand, homeDir);
     else if(strcmp(currCommandName, "repeat") == 0)
@@ -103,33 +126,34 @@ int main(void)
 
     //homeDir and lastVisitedDir are global variables
 
-    char* command = NULL;
-    //command = (char*)malloc(max_size*sizeof (char));
+    char* command = (char*)malloc(max_size*sizeof (char));
 
     size_t x;
     x = max_size;
     char* token;
     const char s[2] = ";";      //deliminator
     char currCommand[max_size];
-
-    do
+    while (1)
     {
         prompt(homeDir);
 
-        getline((char **) &command, (size_t *) &x, stdin);
-        command[strlen(command) - 1] = '\0';
-        //REMOVE LAST \n CHARACTER
-
+        getline(&command, &x, stdin);
+        if (command[strlen(command) - 1] == '\n')
+            command[strlen(command) - 1] = '\0';
+        //REMOVE LAST \n CHARACTERmake
         token = strtok(command, ";");
-
-
-        while( token != NULL)
+        char commands[strlen(command)][max_size];
+        int itr = 0;
+        while (token != NULL)
         {
-            strcpy(currCommand,token);
-            removeSpacesAndTabs(currCommand);
-            runCommand(currCommand);
+            strcpy(commands[itr++], token);
             token = strtok(NULL, ";");
         }
-
-    }while(1);
+        for (int i = 0; i < itr; i++)
+        {
+            strcpy(currCommand, commands[i]);
+            CleanUpCommand(currCommand);
+            runCommand(currCommand);
+        }
+    }
 }

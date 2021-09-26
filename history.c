@@ -76,7 +76,13 @@ void getHistory(char* command)
             itr++;
         }
         number[itr] = '\0';
-        int num = atoi(number);
+        char *ptr;
+        unsigned long int num = strtol(number, &ptr, 10);
+        if (num == 0)
+        {
+            printf(RED "Error: %s: Invalid argument for history\n",number);
+            return;
+        }
 
         printQueue(history, num);
     }

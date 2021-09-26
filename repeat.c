@@ -13,7 +13,9 @@
      char *ptr;
      unsigned long int num = strtol(number, &ptr, 10);
      if (num == 0)
-     {       printf(RED "Error: %s: Invalid argument for repeat\n",number);
+     {
+         printf(RED "Error: %s: Invalid argument for repeat\n",number);
+         return;
      }
      char temp[max_size];
      strcpy(temp,command);

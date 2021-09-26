@@ -38,6 +38,8 @@ void system_commands(char* command)
         else
             command[l-1] = '\0';
 
+
+
         background(command);
     }
     else

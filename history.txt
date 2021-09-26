@@ -1,20 +1,20 @@
-cd ..
-ls OSN o1.txt OSN/OSN_Assi1 o2.txt
-cd ..
-ls -l OSN o1.txt o2.txt OSN/OSN_Assi1
-ls OSN OSN_Assi1 o1.txt
-cd ..
-ls OSN
-ls OSN Odjaskjd o1.txt OSN/OSN_Assi1 o2.txt
-ls
-ls A.c merge.sh -l sdaskj Assi4_5.c -a 3.3 A.html poly
-ls A.c merge.sh djasdjasnkjdnaskjdnksa 3.2
-ls .. ../../o1.txt
-ls -al .. ../../o1.txt
-ls .. ../../o2.txt
-ls
-ls -la
+gedit&
 ls -l
-ls .. . ../../o1.txt
-clear
-ls .. . ../../OSN ../../o1.txt -a
+pwd
+cd ..
+firefox&
+cd ..
+echo hello
+gedit&
+firefox&
+sleep 5&
+gedit&
+firefox&
+gedit&
+ls -l
+history
+gedit&
+echo "Hello"
+firefox &
+ls - l
+gedit &

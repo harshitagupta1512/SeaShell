@@ -16,7 +16,7 @@
 #include <signal.h>
 #include <sys/resource.h>
 
-#define max_size 1000
+#define max_size 500
 #define RED "\x1B[31m"
 #define GREEN "\x1B[32m"
 #define YELLOW "\x1b[33m"
@@ -50,14 +50,13 @@ void repeat(char* command);
 void createPointers(char* command, char** argumentPointers);
 void runCommand(char* currCommand);
 int isDirectory(const char *path);
-void removeSpacesAndTabs(char* str);
 int processCommand(char* command, char dirName[max_size][max_size], int* dir_size, int* isA, int* isL, char* currDir, char* home);
 void getPermissions(struct stat buf, char perm[11]);
 void getProcessID(char* command, int* pid);
 void getHistory(char* command);
 void SIGINT_handler(int signal);
 void SIGCHLD_handler(int signal);
-
+void CleanUpCommand(char * str);
 //----------------QUEUE------------------//
 
 struct QueueEle
@@ -84,9 +83,7 @@ void printQueue(Queue D, int number);
 void load_history();
 void write_history();
 
-
-
-Queue history;
 //----------------------------------------//
+Queue history;
 
 #endif //OSN_ASSI2_DEF_H
