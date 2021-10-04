@@ -45,6 +45,7 @@ int getParameters(char *command, int *j, int *s) {
     return 1;
 }
 
+
 void sig(char *command) {
     // command format is sig job_number signal_number
     int job_number = 0;
@@ -55,7 +56,8 @@ void sig(char *command) {
     if (x == 0) {
         printf(RED "Invalid Command\n");
     }
-    int ret = kill(job_number, signal_number);
+    int pid = bgProc[job_number - 1].pid;
+    int ret = kill(pid, signal_number);
     if (ret == -1)
         perror(RED "Error ");
 

@@ -106,13 +106,18 @@ void runCommand(char *currCommand) {
         jobs(currCommand);
     else if (strcmp(currCommandName, "sig") == 0)
         sig(currCommand);
+    else if (strcmp(currCommandName, "fg") == 0)
+        fg_command(currCommand);
+    else if (strcmp(currCommandName, "bg") == 0)
+        bg_command(currCommand);
     else
         system_commands(currCommand);
 }
 
 int main(void) {
-    signal(SIGINT, SIGINT_handler);
     signal(SIGCHLD, SIGCHLD_handler);
+    signal(SIGINT, signal_handler_CtrlC);
+    signal(SIGTSTP, signal_handler_CtrlZ);
 
     //-------Initialising the global variables------//
 

@@ -99,6 +99,15 @@ void piping(char *command);
 
 void sig(char *command);
 
+void fg_command(char *command);
+
+void bg_command(char *command);
+
+void signal_handler_CtrlC(int signal);
+
+void signal_handler_CtrlZ(int signal);
+
+int getJ(char *command);
 //----------------QUEUE------------------//
 
 struct QueueEle {

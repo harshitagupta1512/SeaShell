@@ -20,8 +20,8 @@ void SIGCHLD_handler(int signal) {
             printf(YELLOW "%s with pid %d exited normally\n", bgProc[i].procName, child_pid);
             bgProc[i].terminated = 1;
         } else if (WIFSTOPPED(status) || WIFSIGNALED(status)) {
-            kill(child_pid, SIGKILL);
-            printf(RED "\n%s with pid : %d stopped after receiving signal\n", bgProc[i].procName, child_pid);
+            //kill(child_pid, SIGKILL);
+            printf(RED "%s with pid : %d stopped after receiving signal\n", bgProc[i].procName, child_pid);
             bgProc[i].stopped = 1;
         } else {
             printf(RED "%s with pid %d exited abnormally\n", bgProc[i].procName, child_pid);
@@ -31,14 +31,29 @@ void SIGCHLD_handler(int signal) {
 
 }
 
-void SIGINT_handler(int signal) {
-    pid_t pid = getpid();
-    if (pid < 0) {
-        perror(RED "ERROR: ");
-        return;
-    } else {
-        write_history();
-        exit(1);
+/*
+CtrlC tells the terminal to send a SIGINT to the current foreground process,
+which by default translates into terminating the application.
+CtrlD tells the terminal that it should register an EOF on standard input,
+which bash interprets as a desire to exit.
+*/
+
+void signal_handler_CtrlC(int signal) {
+    int pid = getpid();
+    printf("PID = %d\n", pid);
+    if (pid == 0)
+        runCommand("exit");
+    else {
+        printf("\n");
+        fflush(stdout);
     }
 }
+
+void signal_handler_CtrlZ(int signal) {
+    printf("\n");
+    fflush(stdout);
+}
+
+
+
 
