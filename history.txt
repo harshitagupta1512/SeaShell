@@ -1,20 +1,20 @@
-gedit&
+cat o.txt | sort
+cat o.txt
+sort
+ls -l | more
 ls -l
-pwd
-cd ..
-firefox&
-cd ..
-echo hello
-gedit&
-firefox&
-sleep 5&
-gedit&
-firefox&
-gedit&
-ls -l
-history
-gedit&
-echo "Hello"
-firefox &
-ls - l
-gedit &
+more
+sig 7 8
+make
+./Seashell
+./SeaShell
+clear
+make
+sig 9 8
+sig 7 8
+sig 8 9
+sih 9 8
+sig 9 0
+sig 8 7
+sig 8 0
+sig 90 90
