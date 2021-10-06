@@ -1,97 +1,88 @@
 #include "def.h"
-int processCommand(char* command, char dirName[max_size][max_size], int* dir_size, int* isA, int* isL, char* currDir, char* home) {
+
+int processCommand(char *command, char dirName[max_size][max_size], int *dir_size, int *isA, int *isL, char *currDir,
+                   char *home) {
 
     char params[100][100];
     int size = 0;
 
-    for(int i = 0; command[i] != '\0'; ++i) {
-        if(command[i] == ' ') {
+    for (int i = 0; command[i] != '\0'; ++i) {
+        if (command[i] == ' ') {
             continue;
         }
         int j = i;
-        for(j = i; command[j] != '\0' && command[j] != ' '; ++j){
+        for (j = i; command[j] != '\0' && command[j] != ' '; ++j) {
             params[size][j - i] = command[j];
         }
         params[size][j - i] = '\0';
         size++;
-        if(command[j] == '\0') {
+        if (command[j] == '\0') {
             break;
-        }
-        else {
+        } else {
             i = j;
         }
     }
 
-    if(size == 0) {
+    if (size == 0) {
 
         return 0;
     }
 
-    if(strcmp(params[0], "ls") != 0) {
+    if (strcmp(params[0], "ls") != 0) {
 
         return 0;
     }
 
-    if(strcmp(command, "ls")==0)
-    {
+    if (strcmp(command, "ls") == 0) {
 
-        strcpy(dirName[0],currDir);
-        (*dir_size) +=1 ;
+        strcpy(dirName[0], currDir);
+        (*dir_size) += 1;
         return 1;
     }
 
     int dir_flag = 0;
 
-    for(int i = 1; i < size; ++ i)
-    {
+    for (int i = 1; i < size; ++i) {
 
-        char * p = params[i];
+        char *p = params[i];
 
-        if(p[0] != '\0' && p[0] == '-') {
+        if (p[0] != '\0' && p[0] == '-') {
 
-            for(int j = 1; p[j] != '\0'; ++j) {
-                if(p[j] == 'l') {
+            for (int j = 1; p[j] != '\0'; ++j) {
+                if (p[j] == 'l') {
                     *isL = 1;
-                }
-                else if(p[j] == 'a') {
+                } else if (p[j] == 'a') {
                     *isA = 1;
-                }
-                else {
+                } else {
                     return 0;
                 }
             }
-        }
-        else {
+        } else {
 
             dir_flag = 1;
-            if(strcmp(p, ".") == 0) {
+            if (strcmp(p, ".") == 0) {
                 strcpy(dirName[*dir_size], currDir);
-                (*dir_size)+=1;
+                (*dir_size) += 1;
                 continue;
-            }
-            else if(strcmp(p, "..") == 0) {
+            } else if (strcmp(p, "..") == 0) {
                 //char parent[max_size];
                 //findParent(parent, currDir);
                 strcpy(dirName[*dir_size], "..");
-                (*dir_size)+=1;
-            }
-            else if(strcmp(p, "~") == 0) {
+                (*dir_size) += 1;
+            } else if (strcmp(p, "~") == 0) {
                 strcpy(dirName[(*dir_size)], home);
-                (*dir_size)+=1;
+                (*dir_size) += 1;
 
-            }
-            else
-            {
+            } else {
                 strcpy(dirName[(*dir_size)], p);
-                (*dir_size)+=1;
+                (*dir_size) += 1;
             }
 
         }
     }
-    if(dir_flag == 0)
-    {
-        (*dir_size)+=1;
-        strcpy(dirName[0],currDir);
+    if (dir_flag == 0) {
+        (*dir_size) += 1;
+        strcpy(dirName[0], currDir);
 
         return 1;
     }
@@ -99,8 +90,7 @@ int processCommand(char* command, char dirName[max_size][max_size], int* dir_siz
 }
 
 
-int isDirectory(const char *path)
-{
+int isDirectory(const char *path) {
     struct stat statBuf;
     if (stat(path, &statBuf) != 0)
         return 0;
@@ -109,34 +99,33 @@ int isDirectory(const char *path)
 }
 
 
-void getPermissions(struct stat buf, char perm[11])
-{
-    strcpy(perm,"----------");
-    if(buf.st_mode & S_IFDIR)
+void getPermissions(struct stat buf, char perm[11]) {
+    strcpy(perm, "----------");
+    if (S_ISDIR(buf.st_mode))
         perm[0] = 'd';
-    if(buf.st_mode & S_IRUSR)
+    if (buf.st_mode & S_IRUSR)
         perm[1] = 'r';
-    if(buf.st_mode & S_IWUSR)
+    if (buf.st_mode & S_IWUSR)
         perm[2] = 'w';
-    if(buf.st_mode & S_IXUSR)
+    if (buf.st_mode & S_IXUSR)
         perm[3] = 'x';
-    if(buf.st_mode & S_IRGRP)
+    if (buf.st_mode & S_IRGRP)
         perm[4] = 'r';
-    if(buf.st_mode & S_IWGRP)
+    if (buf.st_mode & S_IWGRP)
         perm[5] = 'w';
-    if(buf.st_mode & S_IXGRP)
+    if (buf.st_mode & S_IXGRP)
         perm[6] = 'x';
-    if(buf.st_mode & S_IROTH)
+    if (buf.st_mode & S_IROTH)
         perm[7] = 'r';
-    if(buf.st_mode & S_IWOTH)
+    if (buf.st_mode & S_IWOTH)
         perm[8] = 'w';
-    if(buf.st_mode & S_IXOTH)
+    if (buf.st_mode & S_IXOTH)
         perm[9] = 'x';
     perm[10] = '\0';
 
 }
 
-struct LSL_info{
+struct LSL_info {
 
     char permissions[11];
     unsigned int numLinks;
@@ -153,15 +142,13 @@ struct LSL_info{
 };
 
 
-int getFileDetails(char* fileName, struct LSL_info* fileInfo)
-{
+int getFileDetails(char *fileName, struct LSL_info *fileInfo) {
     struct stat statbuf;
     struct passwd *p;
     struct group *g;
 
     int x = stat(fileName, &statbuf);
-    if(x != 0)
-    {
+    if (x != 0) {
         printf(RED "Error: %s: Invalid File/Directory name\n", fileName);
         return 0;
     }
@@ -181,20 +168,17 @@ int getFileDetails(char* fileName, struct LSL_info* fileInfo)
     properFormatTime = localtime(&t.tv_sec);
 
     int fileMonth = properFormatTime->tm_mon + 1;
-    int fileYear = properFormatTime->tm_year +1900;
+    int fileYear = properFormatTime->tm_year + 1900;
     time_t tn = time(0);
-    struct tm* now = localtime(&tn);
+    struct tm *now = localtime(&tn);
 
     int currYear = now->tm_year + 1900;
     int currMonth = now->tm_mon + 1;
 
-    if(currYear > fileYear)
-    {
+    if (currYear > fileYear) {
         strftime(fileInfo->date, 24, "%b   %d   %Y", localtime(&(statbuf.st_ctime)));
-    }
-    else
-    {
-        if(currMonth - fileMonth > 6)
+    } else {
+        if (currMonth - fileMonth > 6)
             strftime(fileInfo->date, 24, "%b   %d   %Y", localtime(&(statbuf.st_ctime)));
         else
             strftime(fileInfo->date, 24, "%b   %d   %H:%M", localtime(&(statbuf.st_ctime)));
@@ -207,8 +191,7 @@ int getFileDetails(char* fileName, struct LSL_info* fileInfo)
 
 }
 
-void ls(char* command, char* home)
-{
+void ls(char *command, char *home) {
     char currDir[max_size];
     getcwd(currDir, max_size);
 
@@ -222,95 +205,81 @@ void ls(char* command, char* home)
     x = processCommand(command, dirName, &dir_size, &isA, &isL, currDir, home);
 
     //for(int i=0;i<dir_size;i++)
-     //   printf("[%d] %s \n", i, dirName[i]);
+    //   printf("[%d] %s \n", i, dirName[i]);
 
-    if(x == 0)
+    if (x == 0)
         printf(RED "Invalid Command\n");
 
     long unsigned int totalBlocks;
     char fileName[max_size];
 
-   for( int y = 0; y < dir_size ; y++)
-   {
-       //TRAVERSING THROUGH THE MULTIPLE DIR/FILE NAMES
+    for (int y = 0; y < dir_size; y++) {
+        //TRAVERSING THROUGH THE MULTIPLE DIR/FILE NAMES
 
-       if(dir_size > 1 && isDirectory(dirName[y]) == 1)
-           printf(YELLOW "%s:\n",dirName[y]);
+        if (dir_size > 1 && isDirectory(dirName[y]) == 1)
+            printf(YELLOW "%s:\n", dirName[y]);
 
-       if ( isDirectory(dirName[y]) == 1)
-       {
-           totalBlocks = 0;
-           DIR *d;
-           struct dirent *dir;
-           d = opendir(dirName[y]);
+        if (isDirectory(dirName[y]) == 1) {
+            totalBlocks = 0;
+            DIR *d;
+            struct dirent *dir;
+            d = opendir(dirName[y]);
 
-           if (d)
-           {
-               if (isL == 0)
-               {
-                   while ((dir = readdir(d)) != NULL)
-                       if (dir->d_name[0] != '.' || (dir->d_name[0] == '.' && isA == 1))
-                           printf(GREEN "%s\n", dir->d_name);
-               }
-               else
-               {
-                   while ((dir = readdir(d)) != NULL)
-                       if (dir->d_name[0] != '.' || (dir->d_name[0] == '.' && isA == 1))
-                       {
-                               strcpy(fileName, dirName[y]);
-                               strcat(fileName, "/");
-                               strcat(fileName, dir->d_name);
-                               fileName[strlen(dirName[y]) + strlen(dir->d_name) + 1] = '\0';
+            if (d) {
+                if (isL == 0) {
+                    while ((dir = readdir(d)) != NULL)
+                        if (dir->d_name[0] != '.' || (dir->d_name[0] == '.' && isA == 1))
+                            printf("%s\n", dir->d_name);
+                } else {
+                    while ((dir = readdir(d)) != NULL)
+                        if (dir->d_name[0] != '.' || (dir->d_name[0] == '.' && isA == 1)) {
+                            strcpy(fileName, dirName[y]);
+                            strcat(fileName, "/");
+                            strcat(fileName, dir->d_name);
+                            fileName[strlen(dirName[y]) + strlen(dir->d_name) + 1] = '\0';
 
-                               struct LSL_info fileInfo;
-                               getFileDetails(fileName, &fileInfo);
+                            struct LSL_info fileInfo;
+                            getFileDetails(fileName, &fileInfo);
 
-                               printf(GREEN  "%10s  %10d  %10s  %10s  %10ld  %10s  %s\n", fileInfo.permissions, fileInfo.numLinks, fileInfo.userName,
-                                      fileInfo.groupName,
-                                      fileInfo.size, fileInfo.date, dir->d_name);
+                            printf("%10s  %10d  %10s  %10s  %10ld  %10s  %s\n", fileInfo.permissions, fileInfo.numLinks,
+                                   fileInfo.userName,
+                                   fileInfo.groupName,
+                                   fileInfo.size, fileInfo.date, dir->d_name);
 
-                               totalBlocks = totalBlocks + fileInfo.numBlocks;
-                       }
+                            totalBlocks = totalBlocks + fileInfo.numBlocks;
+                        }
 
-                   printf(GREEN "Total %ld\n", totalBlocks / 2);
-               }
-               closedir(d);
+                    printf("Total %ld\n", totalBlocks / 2);
+                }
+                closedir(d);
 
-           } else
-               printf(RED "No such directory exists\n");
-       }
-       else
-       {
-           //dirName[y] is just a file
+            } else
+                printf(RED "No such directory exists\n");
+        } else {
+            //dirName[y] is just a file
 
-           if (isL == 0)
-           {
-               strcpy(fileName, dirName[y]);
-               struct stat statbuf;
-               int y = stat(fileName, &statbuf);
-               if(y != 0)
-               {
-                   printf(RED "Error: %s: Invalid File/Directory name\n", fileName);
-               }
-               else
+            if (isL == 0) {
+                strcpy(fileName, dirName[y]);
+                struct stat statbuf;
+                int y = stat(fileName, &statbuf);
+                if (y != 0) {
+                    printf(RED "Error: %s: Invalid File/Directory name\n", fileName);
+                } else
                     printf(YELLOW "%s\n", fileName);
-           }
-           else
-           {
-               if (fileName[0] != '.' || (fileName[0] == '.' && isA == 1))
-               {
-                   strcpy(fileName, dirName[y]);
-                   struct LSL_info fileInfo;
-                   int k = 0;
-                   k = getFileDetails(fileName, &fileInfo);
-                   if(k != 0)
-                   {
-                       printf(GREEN "%10s  %10d  %10s  %10s  %10ld  %10s  %s\n", fileInfo.permissions, fileInfo.numLinks, fileInfo.userName,
-                          fileInfo.groupName,
-                          fileInfo.size, fileInfo.date, dirName[y]);
-                   }
-               }
-           }
-       }
-   }
+            } else {
+                if (fileName[0] != '.' || (fileName[0] == '.' && isA == 1)) {
+                    strcpy(fileName, dirName[y]);
+                    struct LSL_info fileInfo;
+                    int k = 0;
+                    k = getFileDetails(fileName, &fileInfo);
+                    if (k != 0) {
+                        printf("%10s  %10d  %10s  %10s  %10ld  %10s  %s\n", fileInfo.permissions, fileInfo.numLinks,
+                               fileInfo.userName,
+                               fileInfo.groupName,
+                               fileInfo.size, fileInfo.date, dirName[y]);
+                    }
+                }
+            }
+        }
+    }
 }

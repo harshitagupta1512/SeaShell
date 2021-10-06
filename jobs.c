@@ -1,11 +1,11 @@
 #include "def.h"
 
-void sort(struct proc temp[numBgProc], int n) {
+void sort(struct node temp[totalBgProc], int n) {
 
-    struct proc p;
+    struct node p;
     for (int i = 1; i < n; i++)
         for (int j = 0; j < n - i; j++) {
-            if (strcmp(temp[j].procName, temp[j + 1].procName) > 0) {
+            if (strcmp(temp[j].name, temp[j + 1].name) > 0) {
                 p = temp[j];
                 temp[j] = temp[j + 1];
                 temp[j + 1] = p;
@@ -24,12 +24,25 @@ int getFlags(char *command, int *isR, int *isS) {
             return 0;
         i++;
         if (command[i] == 'r') {
-            *isR = 1;
-            *isS = 0;
+            if (command[i + 1] == 's') {
+                *isR = 1;
+                *isS = 1;
+                i++;
+                i++;
+            } else {
+                *isR = 1;
+                *isS = 0;
+                i++;
+            }
             return 1;
         } else if (command[i] == 's') {
-            *isS = 1;
-            *isR = 0;
+            if (command[i] == 'r') {
+                *isS = 1;
+                *isR = 1;
+            } else {
+                *isS = 1;
+                *isR = 0;
+            }
             return 1;
 
         } else
@@ -37,6 +50,36 @@ int getFlags(char *command, int *isR, int *isS) {
     }
 }
 
+int getStatus(int pid, char *status) {
+    char file[max_size];
+    sprintf(file, "/proc/%d/stat", pid);
+    FILE *fd;
+    fd = fopen(file, "r");
+    if (fd <= 0) {
+        deleteEleByPID(pid); //process/file not found
+        return -1;
+    }
+    char processStatus[3];
+    char line[max_size];
+    fgets(line, sizeof(line), fd);
+
+    char *t;
+    t = strtok(line, " ");
+    int itr = 1;
+    while (t != NULL) {
+        if (itr == 3)
+            strcpy(processStatus, t);
+        t = strtok(NULL, " ");
+        itr++;
+    }
+
+    if (strcmp(processStatus, "T") == 0)
+        strcpy(status, "Stopped");
+    else if (strcmp(processStatus, "S") == 0 || strcmp(processStatus, "R") == 0)
+        strcpy(status, "Running");
+    else
+        strcpy(status, processStatus);
+}
 
 void jobs(char *command) {
 
@@ -47,31 +90,23 @@ void jobs(char *command) {
         printf(RED "Invalid Command\n");
         return;
     }
-    struct proc temp[numBgProc];
-    char status[numBgProc][max_size];
+    struct node temp[totalBgProc];
+    char status[totalBgProc][max_size];
 
-    for (int i = 0; i < numBgProc; i++) {
+    for (int i = 0; i < totalBgProc; i++) {
 
-        temp[i] = bgProc[i];
+        temp[i] = bgProcess[i];
     }
 
-    sort(temp, numBgProc);
+    sort(temp, totalBgProc);
 
-    for (int i = 0; i < numBgProc; i++) {
-
-        if (temp[i].stopped == 0 && temp[i].terminated == 0)
-            strcpy(status[i], "Running");
-        else if (temp[i].stopped == 1)
-            strcpy(status[i], "Stopped");
-        else
-            strcpy(status[i], "Terminated");
-
+    for (int i = 0; i < totalBgProc; i++) {
+        getStatus(temp[i].pid, status[i]);
     }
-    
-    for (int i = 0; i < numBgProc; i++) {
-        if ((isR == 1 && strcmp(status[i], "Running") == 0) ||
-            (isS == 1 && strcmp(status[i], "Stopped") == 0))
-            printf(GREEN "[%d] %s %s [%d]\n", temp[i].bgJobNumber, status[i], temp[i].procName, temp[i].pid);
-    }
+
+    for (int i = 0; i < totalBgProc; i++)
+        if ((isS == 1 && strcmp(status[i], "Stopped") == 0) || (isR == 1 && strcmp(status[i], "Running") == 0))
+            printf(GREEN "[%d] %s %s [%d]\n", temp[i].job_num, status[i], temp[i].name, temp[i].pid);
+
 
 }

@@ -1,20 +1,20 @@
-sleep 10&
 jobs
-fg 1
-jobs
-vim&
-jobs
-fg 2
-jobs
-vi&
-jobs
-fg 3
-jobs
+bg 7
 exit
 vim&
 jobs
-sig 1 9
+bg 1
 jobs
-pinfo 18709
+fg 1
 clear
+jobs
+ls -l | more
+ls -l
+more
+cat o.txt | wc
+cat o.txt
+wc
+exit
+ls -l>file.txt
+cat file.txt
 exit

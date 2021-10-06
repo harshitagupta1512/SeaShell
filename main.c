@@ -115,6 +115,7 @@ void runCommand(char *currCommand) {
 }
 
 int main(void) {
+    shell_pid = getpid();
     signal(SIGCHLD, SIGCHLD_handler);
     signal(SIGINT, signal_handler_CtrlC);
     signal(SIGTSTP, signal_handler_CtrlZ);
@@ -123,7 +124,8 @@ int main(void) {
 
     strcpy(lastAddedCommand, ""); //For removing repetitive commands in history
 
-    numBgProc = 0; //Keeps track of current number of active bg processes
+    totalBgProc = 0; //Keeps track of current number of active bg processes
+    numJobs = 0;
 
     history = initQueue(); //Data Structure (Queue) that stores latest executed commands / history
 

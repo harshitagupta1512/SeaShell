@@ -5,30 +5,21 @@ void SIGCHLD_handler(int signal) {
     pid_t child_pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
 
     if (child_pid > 0) {
-        int i;
-        int flag = 0;
-        for (i = 0; i < numBgProc; i++) {
-            if (bgProc[i].pid == child_pid && bgProc[i].terminated == 0 && bgProc[i].stopped == 0) {
-                flag = 1;
-                break;
-            }
-        }
-        if (flag == 0)
-            return;
+        char pname[max_size];
+        int x = getPnameByPID(child_pid, pname);
 
         if (WEXITSTATUS(status) == EXIT_SUCCESS && WIFEXITED(status)) {
-            printf(YELLOW "%s with pid %d exited normally\n", bgProc[i].procName, child_pid);
-            bgProc[i].terminated = 1;
+            printf(YELLOW "%s with pid %d exited normally\n", pname, child_pid);
+            deleteEleByPID(child_pid);
+
         } else if (WIFSTOPPED(status) || WIFSIGNALED(status)) {
-            //kill(child_pid, SIGKILL);
-            printf(RED "%s with pid : %d stopped after receiving signal\n", bgProc[i].procName, child_pid);
-            bgProc[i].stopped = 1;
+            if (x != -1)
+                printf(RED "%s with pid : %d stopped after receiving signal\n", pname, child_pid);
         } else {
-            printf(RED "%s with pid %d exited abnormally\n", bgProc[i].procName, child_pid);
-            bgProc[i].terminated = 1;
+            printf(RED "%s with pid %d exited abnormally\n", pname, child_pid);
+            deleteEleByPID(child_pid);
         }
     }
-
 }
 
 /*
@@ -40,18 +31,32 @@ which bash interprets as a desire to exit.
 
 void signal_handler_CtrlC(int signal) {
     int pid = getpid();
-    printf("PID = %d\n", pid);
-    if (pid == 0)
-        runCommand("exit");
-    else {
+    if (pid < 0) {
+        perror("Error ");
+        return;
+    } else if (pid != shell_pid) {
+        deleteEleByPID(pid);
+        exit(1);
+    } else {
+        write_history();
         printf("\n");
         fflush(stdout);
     }
 }
 
 void signal_handler_CtrlZ(int signal) {
-    printf("\n");
-    fflush(stdout);
+    int pid = getpid();
+    if (pid < 0) {
+        perror(RED "Error ");
+        return;
+    }
+
+    if (pid != shell_pid) {
+        int x = kill(pid, SIGTSTP);
+        if (x < 0)
+            perror(RED "Error");
+    }
+
 }
 
 

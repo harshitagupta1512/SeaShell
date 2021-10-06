@@ -7,17 +7,12 @@ void background(char *command) {
 
     else if (pid > 0) {
         //parent process
-        bgProc[numBgProc].pid = pid;
         int x = countSpaces(command);
         char *argumentPointers[x + 2];
         createPointers(command, argumentPointers);
         argumentPointers[x + 1] = NULL;
 
-        strcpy(bgProc[numBgProc].procName, argumentPointers[0]);
-        bgProc[numBgProc].stopped = 0;
-        bgProc[numBgProc].terminated = 0;
-        bgProc[numBgProc].bgJobNumber = numBgProc + 1;
-        numBgProc++;
+        insertEle(argumentPointers[0], pid);
 
         pid_t pgid_parent = getpgrp();
         tcsetpgrp(STDIN_FILENO, pgid_parent);

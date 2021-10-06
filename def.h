@@ -28,18 +28,8 @@
 //Global Variables
 char lastVisitedDir[max_size];
 char homeDir[max_size];
-
-struct proc {
-    int pid;
-    char procName[max_size];
-    int stopped;
-    int terminated;
-    int bgJobNumber;
-};
-
-struct proc bgProc[max_size];
-int numBgProc;
 char lastAddedCommand[max_size];
+int shell_pid;
 
 
 void prompt(char *home);
@@ -141,10 +131,30 @@ void write_history();
 //----------------------------------------//
 Queue history;
 
+
+int totalBgProc;
+int numJobs;
+//-------------linked list (array-based implementation)----------------//
+
+struct node {
+    int pid;
+    int job_num;
+    char name[max_size];
+    char status[max_size];
+};
+struct node bgProcess[max_size]; //Array
+
+void insertEle(char *name, int pid);
+
+int getBgPIDbyJ(int j);
+
+int getPnameByPID(int pid, char *name);
+
+void deleteEleByPID();
+
+//----------------------------------------//
 #endif //OSN_ASSI2_DEF_H
 
 // in piping ls -l | more is not working
-//jobs find status from stat file ???
 // jobs -rs, jobs -r -s ?? possible ???
-// can signal number be 0 in sig ???
 // Multiple files in io redirection ??? cat file1.txt file2.txt

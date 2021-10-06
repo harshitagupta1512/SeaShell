@@ -14,7 +14,7 @@ int getJ(char *command) {
     char *ptr;
     j = strtol(num, &ptr, 10);
     if (j == 0) {
-        perror(RED "Invalid Job Number\n");
+        printf(RED "Invalid Job Number\n");
         return -1;
     }
     return j;
@@ -23,14 +23,14 @@ int getJ(char *command) {
 void fg_command(char *command) {
     //Bring the running or stopped background job corresponding to job number to the foreground, and changes its state to running
     int j = getJ(command);
-    if (j < 0 || j == 0 || j > numBgProc) {
-        perror(RED "Invalid Job Number\n");
+    if (j < 0 || j == 0) {
+        printf(RED "Invalid Job Number\n");
         return;
     }
     int pid = -1;
-    pid = bgProc[j - 1].pid;
+    pid = getBgPIDbyJ(j);
     if (pid <= 0) {
-        perror(RED "Invalid Command");
+        printf(RED "Invalid Command");
         return;
     }
     //SIG_IGN specifies that the signal should be ignored.
@@ -47,12 +47,14 @@ void fg_command(char *command) {
     on the terminal.
     */
 
-    int cpid = bgProc[j - 1].pid; //child process
+    int cpid = pid;
     int e = tcsetpgrp(STDIN_FILENO, cpid);
     if (e < 0) {
         perror(RED "Command Unsuccessful\n");
         return;
     }
+    char pname[max_size];
+    getPnameByPID(pid, pname);
 
     int x = kill(pid, SIGCONT); //SIGCONT signal is sent to a process to make it continue
 
@@ -81,16 +83,7 @@ void fg_command(char *command) {
      */
 
     if (WEXITSTATUS(status) == EXIT_SUCCESS && WIFEXITED(status)) {
-        printf(YELLOW "%s with pid %d suspended\n", bgProc[j - 1].procName, pid);
-        bgProc[j - 1].terminated = 1;
-        bgProc[j - 1].stopped = 0;
-    } else if (WIFSTOPPED(status) || WIFSIGNALED(status)) {
-        printf(YELLOW "%s with pid %d suspended\n", bgProc[j - 1].procName, pid);
-        bgProc[j - 1].stopped = 1;
-        bgProc[j - 1].terminated = 0;
-    } else {
-        printf(YELLOW "%s with pid %d suspended\n", bgProc[j - 1].procName, pid);
-        bgProc[j - 1].terminated = 1;
-        bgProc[j - 1].stopped = 0;
+        deleteEleByPID(pid);
+        printf(YELLOW "%s with pid %d suspended\n", pname, pid);
     }
 }

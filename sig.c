@@ -51,14 +51,21 @@ void sig(char *command) {
     int job_number = 0;
     int signal_number = 0;
     int x = getParameters(command, &job_number, &signal_number);
-    printf("j = %d, s = %d", job_number, signal_number);
 
     if (x == 0) {
         printf(RED "Invalid Command\n");
     }
-    int pid = bgProc[job_number - 1].pid;
+    int pid = getBgPIDbyJ(job_number);
+    if (pid <= 0) {
+        perror(RED "Invalid job number\n");
+        return;
+    }
     int ret = kill(pid, signal_number);
+
     if (ret == -1)
         perror(RED "Error ");
+
+    if (signal_number == 9)
+        deleteEleByPID(pid);
 
 }
