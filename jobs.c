@@ -14,40 +14,50 @@ void sort(struct node temp[totalBgProc], int n) {
 }
 
 int getFlags(char *command, int *isR, int *isS) {
-    if (strlen(command) == 4) {
+    char params[500][500];
+    int size = 0;
+    for (int i = 0; command[i] != '\0'; ++i) {
+        if (command[i] == ' ') {
+            continue;
+        }
+        int j = i;
+        for (j = i; command[j] != '\0' && command[j] != ' '; ++j) {
+            params[size][j - i] = command[j];
+        }
+        params[size][j - i] = '\0';
+        size++;
+        if (command[j] == '\0') {
+            break;
+        } else {
+            i = j;
+        }
+    }
+
+    if (size == 0) {
+        return 0;
+    }
+    if (strcmp(params[0], "jobs") != 0)
+        return 0;
+
+    if (strcmp(command, "jobs") == 0) {
         *isR = 1;
         *isS = 1;
         return 1;
-    } else {
-        int i = 5;
-        if (command[i] != '-')
-            return 0;
-        i++;
-        if (command[i] == 'r') {
-            if (command[i + 1] == 's') {
-                *isR = 1;
-                *isS = 1;
-                i++;
-                i++;
-            } else {
-                *isR = 1;
-                *isS = 0;
-                i++;
-            }
-            return 1;
-        } else if (command[i] == 's') {
-            if (command[i] == 'r') {
-                *isS = 1;
-                *isR = 1;
-            } else {
-                *isS = 1;
-                *isR = 0;
-            }
-            return 1;
+    }
 
-        } else
+    for (int i = 1; i < size; i++) {
+        if (strcmp(params[i], "-r") == 0)
+            *isR = 1;
+        else if (strcmp(params[i], "-rs") == 0 || strcmp(params[i], "-sr") == 0) {
+            *isR = 1;
+            *isS = 1;
+            return 1;
+        } else if (strcmp(params[i], "-s") == 0)
+            *isS = 1;
+        else
             return 0;
     }
+    return 1;
 }
 
 int getStatus(int pid, char *status) {
@@ -107,6 +117,4 @@ void jobs(char *command) {
     for (int i = 0; i < totalBgProc; i++)
         if ((isS == 1 && strcmp(status[i], "Stopped") == 0) || (isR == 1 && strcmp(status[i], "Running") == 0))
             printf(GREEN "[%d] %s %s [%d]\n", temp[i].job_num, status[i], temp[i].name, temp[i].pid);
-
-
 }

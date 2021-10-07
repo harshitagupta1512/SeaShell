@@ -1,20 +1,20 @@
-jobs
-bg 7
-exit
-vim&
-jobs
-bg 1
-jobs
 fg 1
-clear
-jobs
 ls -l | more
 ls -l
 more
-cat o.txt | wc
-cat o.txt
-wc
+clear
 exit
-ls -l>file.txt
-cat file.txt
+sleep 100
+ls -l
+sleep 90
+clear
+jobs
+exit
+sleep 100
+jobs
+cd testFiles
+cat < o.txt | wc -l > op1.txt
+cat < o.txt
+cat
+wc -l > op1.txt
 exit

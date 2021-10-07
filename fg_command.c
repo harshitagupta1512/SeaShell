@@ -30,7 +30,7 @@ void fg_command(char *command) {
     int pid = -1;
     pid = getBgPIDbyJ(j);
     if (pid <= 0) {
-        printf(RED "Invalid Command");
+        printf(RED "Invalid Command\n");
         return;
     }
     //SIG_IGN specifies that the signal should be ignored.

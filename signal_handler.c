@@ -29,34 +29,16 @@ CtrlD tells the terminal that it should register an EOF on standard input,
 which bash interprets as a desire to exit.
 */
 
-void signal_handler_CtrlC(int signal) {
-    int pid = getpid();
-    if (pid < 0) {
-        perror("Error ");
-        return;
-    } else if (pid != shell_pid) {
-        deleteEleByPID(pid);
-        exit(1);
-    } else {
-        write_history();
-        printf("\n");
-        fflush(stdout);
-    }
+void SIGINT_handler(int signal) {
+    //For ctrl C
+    printf("\n");
+    fflush(stdout);
 }
 
-void signal_handler_CtrlZ(int signal) {
-    int pid = getpid();
-    if (pid < 0) {
-        perror(RED "Error ");
-        return;
-    }
-
-    if (pid != shell_pid) {
-        int x = kill(pid, SIGTSTP);
-        if (x < 0)
-            perror(RED "Error");
-    }
-
+void SIGTSTP_handler(int signal) {
+    //for ctrl-Z
+    printf("\n");
+    fflush(stdout);
 }
 
 

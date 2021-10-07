@@ -82,8 +82,7 @@ void runCommand(char *currCommand) {
 
     if (strcmp(currCommandName, "exit") == 0) {
         write_history();
-        exit(0);
-
+        exit(1);
     } else if (isPipe(currCommand) == 1)
         piping(currCommand);
     else if (isRedirec(currCommand) == 1)
@@ -115,11 +114,12 @@ void runCommand(char *currCommand) {
 }
 
 int main(void) {
+    saved_stdout = dup(STDOUT_FILENO); //saved_stdout refers to the STDOUT
+    saved_stdin = dup(STDIN_FILENO);
     shell_pid = getpid();
     signal(SIGCHLD, SIGCHLD_handler);
-    signal(SIGINT, signal_handler_CtrlC);
-    signal(SIGTSTP, signal_handler_CtrlZ);
-
+    signal(SIGINT, SIGINT_handler);
+    signal(SIGTSTP, SIGTSTP_handler);
     //-------Initialising the global variables------//
 
     strcpy(lastAddedCommand, ""); //For removing repetitive commands in history
@@ -148,7 +148,12 @@ int main(void) {
     while (1) {
         prompt(homeDir);
 
-        getline(&command, &x, stdin);
+        int err = getline(&command, &x, stdin);
+        // getline return -1 on failure to read a line (including end-of-file condition)
+        if (err == -1) {
+            printf(RED "\nLogging Out\n");
+            exit(1);
+        }
 
         if (command[strlen(command) - 1] == '\n')
             command[strlen(command) - 1] = '\0'; //REMOVE LAST '\n' CHARACTER

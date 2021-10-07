@@ -229,7 +229,7 @@ void ls(char *command, char *home) {
                 if (isL == 0) {
                     while ((dir = readdir(d)) != NULL)
                         if (dir->d_name[0] != '.' || (dir->d_name[0] == '.' && isA == 1))
-                            printf("%s\n", dir->d_name);
+                            printf(GREEN"%s\n", dir->d_name);
                 } else {
                     while ((dir = readdir(d)) != NULL)
                         if (dir->d_name[0] != '.' || (dir->d_name[0] == '.' && isA == 1)) {
@@ -241,7 +241,8 @@ void ls(char *command, char *home) {
                             struct LSL_info fileInfo;
                             getFileDetails(fileName, &fileInfo);
 
-                            printf("%10s  %10d  %10s  %10s  %10ld  %10s  %s\n", fileInfo.permissions, fileInfo.numLinks,
+                            printf(GREEN"%10s  %10d  %10s  %10s  %10ld  %10s  %s\n", fileInfo.permissions,
+                                   fileInfo.numLinks,
                                    fileInfo.userName,
                                    fileInfo.groupName,
                                    fileInfo.size, fileInfo.date, dir->d_name);
@@ -249,7 +250,7 @@ void ls(char *command, char *home) {
                             totalBlocks = totalBlocks + fileInfo.numBlocks;
                         }
 
-                    printf("Total %ld\n", totalBlocks / 2);
+                    printf(GREEN"Total %ld\n", totalBlocks / 2);
                 }
                 closedir(d);
 
@@ -273,7 +274,8 @@ void ls(char *command, char *home) {
                     int k = 0;
                     k = getFileDetails(fileName, &fileInfo);
                     if (k != 0) {
-                        printf("%10s  %10d  %10s  %10s  %10ld  %10s  %s\n", fileInfo.permissions, fileInfo.numLinks,
+                        printf(GREEN"%10s  %10d  %10s  %10s  %10ld  %10s  %s\n", fileInfo.permissions,
+                               fileInfo.numLinks,
                                fileInfo.userName,
                                fileInfo.groupName,
                                fileInfo.size, fileInfo.date, dirName[y]);

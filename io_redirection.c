@@ -1,14 +1,5 @@
 #include "def.h"
 
-int isRedirec(char *command) { //does the input command involve redirection ?
-    int l = strlen(command);
-    for (int i = 0; i < l; i++)
-        if (command[i] == '<' || command[i] == '>')
-            return 1;
-
-    return 0;
-}
-
 struct redirec {
     int isInput;
     int isOutputAppend;
@@ -19,157 +10,108 @@ struct redirec {
 };
 
 int getRedirecStructure(struct redirec *R, char *command) {
-
-    R->isOutputAppend = 0;
-    R->isOutputOverwrite = 0;
-    R->isInput = 0;
-    int flagInput = 0;
-    int flagOutput = 0;
-    int j = 0;
-
-    while (command[j] != '\0') {
-        if (command[j] == '<') {
-            R->isInput = 1;
-            flagInput++;
-        } else if (command[j] == '>') {
-            flagOutput++;
-            if (command[j + 1] == '>') {
-                j++;
-                R->isOutputAppend = 1;
-            } else
-                R->isOutputOverwrite = 1;
+    char params[500][500];
+    int size = 0;
+    for (int i = 0; command[i] != '\0'; ++i) {
+        if (command[i] == ' ') {
+            continue;
         }
-        j++;
+        int j = i;
+        for (j = i; command[j] != '\0' && command[j] != ' '; ++j) {
+            params[size][j - i] = command[j];
+        }
+        params[size][j - i] = '\0';
+        size++;
+        if (command[j] == '\0') {
+            break;
+        } else {
+            i = j;
+        }
     }
 
-    if (flagInput >= 2 || flagOutput >= 2) {
-        printf(RED
-               "Invalid Command\n");
+    if (size == 0) {
         return 0;
     }
+    /*  for (int i = 0; i < size; i++)
+          printf("--%s--\n", params[i]);
+      */
+    strcpy(R->task, params[0]);
+    int f = 0;
 
-    char word[max_size];
-    int itr = 0;
-    int i = 0;
-    while (command[i] != '>' && command[i] != '<') {
-        word[itr] = command[i];
-        itr++;
-        i++;
-    }
-    if (word[itr - 1] == ' ')
-        word[itr - 1] = '\0';
-    else
-        word[itr] = '\0';
-    strcpy(R->task, word);
-    if (command[i] == '<') {
-
-        //task inputFile outputFile
-        i++;
-        if (command[i] == ' ')
+    for (int i = 1; i < size; i++) {
+        if (strcmp(params[i], "<") == 0) {
+            R->isInput = 1;
             i++;
-
-        char temp[max_size];
-        int pos = 0;
-
-        while (command[i] != '>' && command[i] != '\0') {
-            temp[pos] = command[i];
-            pos++;
+            if (i >= size)
+                return 0;
+            strcpy(R->inputFile, params[i]);
+            f = 1;
+        } else if (strcmp(params[i], ">") == 0) {
+            R->isOutputOverwrite = 1;
+            R->isOutputAppend = 0;
             i++;
-        }
+            if (i >= size)
+                return 0;
+            strcpy(R->outputFile, params[i]);
+            f = 2;
 
-        if (temp[pos - 1] == ' ')
-            temp[pos - 1] = '\0';
-        else
-            temp[pos] = '\0';
-
-        strcpy(R->inputFile, temp);
-
-        if (command[i] == '\0')
-            return 1;
-        else {
-            //Get the output file name
-            //command[i]  = '>'
+        } else if (strcmp(params[i], ">>") == 0) {
+            R->isOutputAppend = 1;
+            R->isOutputOverwrite = 0;
             i++;
-            if (command[i] == '>')
-                i++;
-
-            if (command[i] == ' ')
-                i++;
-
-            pos = 0;
-            while (command[i] != '\0') {
-                temp[pos] = command[i];
-                pos++;
-                i++;
+            if (i >= size)
+                return 0;
+            strcpy(R->outputFile, params[i]);
+            f = 3;
+        } else {
+            if (f == 1)
+                strcpy(R->inputFile, params[i]);
+            else if (f == 2 || f == 3)
+                strcpy(R->outputFile, params[i]);
+            else {
+                strcat(R->task, " ");
+                strcat(R->task, params[i]);
             }
-
-            temp[pos] = '\0';
-            strcpy(R->outputFile, temp);
-        }
-
-    } else {
-        // task outputFile InputFile
-
-        i++;
-        if (command[i] == '>')
-            i++;
-        if (command[i] == ' ')
-            i++;
-
-        char temp[max_size];
-        int pos = 0;
-        while (command[i] != '<' && command[i] != '\0') {
-            temp[pos] = command[i];
-            pos++;
-            i++;
-        }
-
-        if (temp[pos - 1] == ' ')
-            temp[pos - 1] = '\0';
-        else
-            temp[pos] = '\0';
-
-        strcpy(R->outputFile, temp);
-
-        if (command[i] == '\0')
-            return 1;
-        else {
-            //Get the input file name
-            //command[i]  = '<'
-            i++;
-            if (command[i] == ' ')
-                i++;
-
-            pos = 0;
-            while (command[i] != '\0') {
-                temp[pos] = command[i];
-                pos++;
-                i++;
-            }
-
-            temp[pos] = '\0';
-            strcpy(R->inputFile, temp);
         }
     }
+
     return 1;
+}
+
+
+int isRedirec(char *command) { //does the input command involve redirection ?
+    int l = strlen(command);
+    for (int i = 0; i < l; i++)
+        if (command[i] == '<' || command[i] == '>')
+            return 1;
+
+    return 0;
 }
 
 void io_redirection(char *command) {
 
+    printf("Here\n");
     struct redirec R;
+    R.isOutputAppend = 0;
+    R.isInput = 0;
+    R.isOutputOverwrite = 0;
+    strcpy(R.task, "");
+    strcpy(R.inputFile, "");
+    strcpy(R.outputFile, "");
     int x = getRedirecStructure(&R, command);
-    if (x == 0)
+
+    if (x == 0) {
+        printf(RED "Invalid Command");
         return;
-
-    int saved_stdout = dup(STDOUT_FILENO);
-    int saved_stdin = dup(STDIN_FILENO);
-
+    }
+    printf("Command = %s, Input File = %s, Output File = %s\n", R.task, R.inputFile, R.outputFile);
     pid_t pid = fork();
     if (pid < 0) {
         printf(RED
                "Fork Failed\n");
         return;
     }
+
     if (pid == 0) {
         //child process
         if (R.isInput == 1) {
@@ -197,19 +139,17 @@ void io_redirection(char *command) {
 
             dup2(fd_out, 1);
             close(fd_out);
-
-            runCommand(R.task);
-
-            dup2(saved_stdin, 0);
-            close(saved_stdin);
-            dup2(saved_stdout, 1);
-            close(saved_stdout);
-        } else {
-            //parent process
-            int status;
-            waitpid(pid, &status, WUNTRACED);
-
         }
+        runCommand(R.task);
 
+        dup2(saved_stdin, 0);
+        //close(saved_stdin);
+        dup2(saved_stdout, 1);
+        //close(saved_stdout);
+
+    } else {
+        //parent process
+        int status;
+        waitpid(pid, &status, WUNTRACED);
     }
 }

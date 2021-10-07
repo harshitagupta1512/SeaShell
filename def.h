@@ -30,6 +30,8 @@ char lastVisitedDir[max_size];
 char homeDir[max_size];
 char lastAddedCommand[max_size];
 int shell_pid;
+int saved_stdout;
+int saved_stdin;
 
 
 void prompt(char *home);
@@ -93,9 +95,7 @@ void fg_command(char *command);
 
 void bg_command(char *command);
 
-void signal_handler_CtrlC(int signal);
-
-void signal_handler_CtrlZ(int signal);
+void SIGTSTP_handler(int signal);
 
 int getJ(char *command);
 //----------------QUEUE------------------//
@@ -155,6 +155,4 @@ void deleteEleByPID();
 //----------------------------------------//
 #endif //OSN_ASSI2_DEF_H
 
-// in piping ls -l | more is not working
-// jobs -rs, jobs -r -s ?? possible ???
-// Multiple files in io redirection ??? cat file1.txt file2.txt
+// ctrl - Z

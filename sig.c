@@ -45,7 +45,6 @@ int getParameters(char *command, int *j, int *s) {
     return 1;
 }
 
-
 void sig(char *command) {
     // command format is sig job_number signal_number
     int job_number = 0;
@@ -67,5 +66,4 @@ void sig(char *command) {
 
     if (signal_number == 9)
         deleteEleByPID(pid);
-
 }
