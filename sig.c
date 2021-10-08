@@ -19,7 +19,9 @@ int getParameters(char *command, int *j, int *s) {
     char *ptr;
     *j = strtol(num, &ptr, 10);
     if (*j == 0) {
-        printf(RED "Error: %s: Invalid argument for sig\n", num);
+        print_red();
+        printf("Error: %s: Invalid argument for sig\n", num);
+        print_reset();
         return 0;
     }
     i++;
@@ -38,7 +40,9 @@ int getParameters(char *command, int *j, int *s) {
 
     *s = strtol(num2, &ptr, 10);
     if (strcmp(num2, "0") != 0 && *s == 0) {
-        printf(RED "Error: %s: Invalid argument for sig\n", num);
+        print_red();
+        printf("Error: %s: Invalid argument for sig\n", num);
+        print_reset();
         return 0;
     }
 
@@ -52,18 +56,24 @@ void sig(char *command) {
     int x = getParameters(command, &job_number, &signal_number);
 
     if (x == 0) {
-        printf(RED "Invalid Command\n");
+        print_red();
+        printf("Invalid Command\n");
+        print_reset();
     }
     int pid = getBgPIDbyJ(job_number);
     if (pid <= 0) {
-        perror(RED "Invalid job number\n");
+        print_red();
+        perror("Invalid job number\n");
+        print_reset();
         return;
     }
     int ret = kill(pid, signal_number);
 
-    if (ret == -1)
+    if (ret == -1) {
+        print_red();
         perror(RED "Error ");
-
-    if (signal_number == 9)
-        deleteEleByPID(pid);
+        print_reset();
+    }
+    // if (signal_number == 9)
+    //    deleteEleByPID(pid);
 }

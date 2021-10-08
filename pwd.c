@@ -1,8 +1,9 @@
 #include "def.h"
 
-void pwd()
-{
+void pwd() {
     char currDir[max_size];
     getcwd(currDir, max_size);
-    printf(GREEN "%s\n",currDir);
+    print_green();
+    printf("%s\n", currDir);
+    print_reset();
 }

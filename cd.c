@@ -1,11 +1,10 @@
 #include "def.h"
-int countSpaces(char* str)
-{
+
+int countSpaces(char *str) {
     int i = 0;
     int count = 0;
-    while(str[i]!='\0')
-    {
-        if(str[i]==' ')
+    while (str[i] != '\0') {
+        if (str[i] == ' ')
             count++;
         i++;
     }
@@ -13,20 +12,17 @@ int countSpaces(char* str)
     return count;
 }
 
-void findParent(char *parent, char* currDir)
-{
+void findParent(char *parent, char *currDir) {
     unsigned long int l = strlen(currDir);
     unsigned long int i;
-    for(i = l - 1 ; i >= 0 ; i--)
-    {
-        if(currDir[i] == '/')
+    for (i = l - 1; i >= 0; i--) {
+        if (currDir[i] == '/')
             break;
     }
 
     unsigned long int itr = 0;
 
-    for(unsigned long int j = 0 ; j < i ; j++)
-    {
+    for (unsigned long int j = 0; j < i; j++) {
         parent[itr] = currDir[j];
         itr++;
     }
@@ -35,7 +31,7 @@ void findParent(char *parent, char* currDir)
 }
 
 
-void cd(char* command, char* home) {
+void cd(char *command, char *home) {
 
     char tempLastDir[max_size];
     strcpy(tempLastDir, lastVisitedDir);
@@ -47,24 +43,26 @@ void cd(char* command, char* home) {
     int x = countSpaces(command);
 
     if (x > 1) {
-        printf(RED "Error - more than 1 command line arguments are not allowed for cd\n" );
+        print_red();
+        printf("Error - more than 1 command line arguments are not allowed for cd\n");
+        print_reset();
         return;
     }
 
-    if (strcmp(command,"cd") == 0)
-    {   chdir(home);
+    if (strcmp(command, "cd") == 0) {
+        chdir(home);
         return;
     }
 
-    if(strcmp(command,"cd ~") == 0)
-    {   chdir(home);
+    if (strcmp(command, "cd ~") == 0) {
+        chdir(home);
         return;
     }
 
-    if(strcmp(command, "cd .") == 0)
+    if (strcmp(command, "cd .") == 0)
         return;
 
-    if (strcmp(command,"cd ..") == 0) //go to the parent directory of the current directory
+    if (strcmp(command, "cd ..") == 0) //go to the parent directory of the current directory
     {
         /*
         char parent[max_size];
@@ -80,30 +78,32 @@ void cd(char* command, char* home) {
         return;
     }
 
-    if(strcmp(command,"cd -") == 0)
-    {
+    if (strcmp(command, "cd -") == 0) {
         //go to the last visited directory
-        if(strcmp(tempLastDir, "") == 0)
-        {
-            printf(RED "Error: cd: OLDPWD not set\n");
+        if (strcmp(tempLastDir, "") == 0) {
+            print_red();
+            printf("Error: cd: OLDPWD not set\n");
+            print_reset();
             return;
-        }
-        else
-        {
+        } else {
             chdir(tempLastDir);
-            printf(GREEN "%s\n", tempLastDir);
+            print_green();
+            printf("%s\n", tempLastDir);
+            print_reset();
             return;
         }
 
     }
 
-    if(x == 1)
-    {
+    if (x == 1) {
         //go to the specified directory
         char dirName[max_size];
         strcpy(dirName, command + 3);
         int d = chdir(dirName);
-        if( d < 0)
-            printf( RED "Error Encountered - No such directory\n");
+        if (d < 0) {
+            print_red();
+            printf("Error Encountered - No such directory\n");
+            print_reset();
+        }
     }
 }

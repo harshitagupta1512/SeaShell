@@ -9,17 +9,29 @@ void SIGCHLD_handler(int signal) {
         int x = getPnameByPID(child_pid, pname);
 
         if (WEXITSTATUS(status) == EXIT_SUCCESS && WIFEXITED(status)) {
-            printf(YELLOW "%s with pid %d exited normally\n", pname, child_pid);
+            print_yellow();
+            printf("%s with pid %d exited normally\n", pname, child_pid);
+            print_reset();
             deleteEleByPID(child_pid);
 
-        } else if (WIFSTOPPED(status) || WIFSIGNALED(status)) {
-            if (x != -1)
-                printf(RED "%s with pid : %d stopped after receiving signal\n", pname, child_pid);
+        } else if (WIFSTOPPED(status)) {
+            print_red();
+            printf("%s with pid : %d stopped after receiving signal\n", pname, child_pid);
+            print_reset();
+        } else if (WIFSIGNALED(status)) {
+            print_red();
+            printf("%s with pid : %d exited after receiving signal\n", pname, child_pid);
+            print_reset();
+            deleteEleByPID(child_pid);
         } else {
-            printf(RED "%s with pid %d exited abnormally\n", pname, child_pid);
+            print_red();
+            printf("%s with pid %d exited abnormally\n", pname, child_pid);
+            print_reset();
             deleteEleByPID(child_pid);
         }
     }
+    //prompt(homeDir);
+    //fflush(stdout);
 }
 
 /*
@@ -32,11 +44,21 @@ which bash interprets as a desire to exit.
 void SIGINT_handler(int signal) {
     //For ctrl C
     printf("\n");
+    prompt(homeDir);
+    prompt(homeDir);
     fflush(stdout);
 }
 
 void SIGTSTP_handler(int signal) {
-    //for ctrl-Z
+    //CTRL-Z - should push any currently running foreground job into the background, change its state from running to stopped
+    int pid = getpid();
+    if (pid != shell_pid) {
+        // there is a foreground process running
+        int e = kill(pid, SIGTSTP);
+        if (e < 0)
+            perror(RED "Error");
+    }
+
     printf("\n");
     fflush(stdout);
 }

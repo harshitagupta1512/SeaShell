@@ -14,7 +14,9 @@ int getJ(char *command) {
     char *ptr;
     j = strtol(num, &ptr, 10);
     if (j == 0) {
-        printf(RED "Invalid Job Number\n");
+        print_red();
+        printf("Invalid Job Number\n");
+        print_reset();
         return -1;
     }
     return j;
@@ -24,13 +26,17 @@ void fg_command(char *command) {
     //Bring the running or stopped background job corresponding to job number to the foreground, and changes its state to running
     int j = getJ(command);
     if (j < 0 || j == 0) {
-        printf(RED "Invalid Job Number\n");
+        print_red();
+        printf("Invalid Job Number\n");
+        print_reset();
         return;
     }
     int pid = -1;
     pid = getBgPIDbyJ(j);
     if (pid <= 0) {
-        printf(RED "Invalid Command\n");
+        print_red();
+        printf("Invalid Command\n");
+        print_reset();
         return;
     }
     //SIG_IGN specifies that the signal should be ignored.
@@ -84,6 +90,8 @@ void fg_command(char *command) {
 
     if (WEXITSTATUS(status) == EXIT_SUCCESS && WIFEXITED(status)) {
         deleteEleByPID(pid);
-        printf(YELLOW "%s with pid %d suspended\n", pname, pid);
+        print_yellow();
+        printf("%s with pid %d suspended\n", pname, pid);
+        print_reset();
     }
 }

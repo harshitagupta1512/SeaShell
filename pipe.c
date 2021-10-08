@@ -44,11 +44,8 @@ void piping(char *command) {
             return;
         }
     }
-    printf("Number of Commands = %d\n", numCommands);
 
     for (int i = 0; i < numCommands - 1; i++) {
-        printf("here");
-        printf("Command in pipe = %s", arrayCommands[i]);
         if (i == 0) {
             //dup2(saved_stdin, 0);
             dup2(pipesArray[i][1], 1); // fd = 1 refers to the write end of pipe[i]

@@ -1,7 +1,6 @@
 #include "def.h"
 
 void sort(struct node temp[totalBgProc], int n) {
-
     struct node p;
     for (int i = 1; i < n; i++)
         for (int j = 0; j < n - i; j++) {
@@ -97,7 +96,9 @@ void jobs(char *command) {
     int isS = 0;
     int x = getFlags(command, &isR, &isS);
     if (x == 0) {
-        printf(RED "Invalid Command\n");
+        print_red();
+        printf("Invalid Command\n");
+        print_reset();
         return;
     }
     struct node temp[totalBgProc];
@@ -115,6 +116,9 @@ void jobs(char *command) {
     }
 
     for (int i = 0; i < totalBgProc; i++)
-        if ((isS == 1 && strcmp(status[i], "Stopped") == 0) || (isR == 1 && strcmp(status[i], "Running") == 0))
-            printf(GREEN "[%d] %s %s [%d]\n", temp[i].job_num, status[i], temp[i].name, temp[i].pid);
+        if ((isS == 1 && strcmp(status[i], "Stopped") == 0) || (isR == 1 && strcmp(status[i], "Running") == 0)) {
+            print_green();
+            printf("[%d] %s %s [%d]\n", temp[i].job_num, status[i], temp[i].name, temp[i].pid);
+            print_reset();
+        }
 }

@@ -1,20 +1,20 @@
-fg 1
-ls -l | more
-ls -l
-more
-clear
-exit
-sleep 100
-ls -l
-sleep 90
-clear
-jobs
-exit
-sleep 100
-jobs
 cd testFiles
-cat < o.txt | wc -l > op1.txt
-cat < o.txt
-cat
-wc -l > op1.txt
-exit
+ls -l > l.txt
+ls -l
+cat l.txt\
+cat l.txt
+cd testFiles
+ls -l > t2.txt
+ls -l
+cat t2.txt
+ls -l
+echo hiiiii > hi.txt
+echo hiiiii
+cat hi.txt
+echo hiiiii
+pinfo > p.txt
+pinfo
+cat p.txt
+pifo
+pinfo
+clear

@@ -149,7 +149,9 @@ int getFileDetails(char *fileName, struct LSL_info *fileInfo) {
 
     int x = stat(fileName, &statbuf);
     if (x != 0) {
-        printf(RED "Error: %s: Invalid File/Directory name\n", fileName);
+        print_red();
+        printf("Error: %s: Invalid File/Directory name\n", fileName);
+        print_reset();
         return 0;
     }
     fileInfo->userID = statbuf.st_uid;
@@ -207,18 +209,22 @@ void ls(char *command, char *home) {
     //for(int i=0;i<dir_size;i++)
     //   printf("[%d] %s \n", i, dirName[i]);
 
-    if (x == 0)
-        printf(RED "Invalid Command\n");
-
+    if (x == 0) {
+        print_red();
+        printf("Invalid Command\n");
+        print_reset();
+    }
     long unsigned int totalBlocks;
     char fileName[max_size];
 
     for (int y = 0; y < dir_size; y++) {
         //TRAVERSING THROUGH THE MULTIPLE DIR/FILE NAMES
 
-        if (dir_size > 1 && isDirectory(dirName[y]) == 1)
+        if (dir_size > 1 && isDirectory(dirName[y]) == 1) {
+            print_yellow();
             printf(YELLOW "%s:\n", dirName[y]);
-
+            print_reset();
+        }
         if (isDirectory(dirName[y]) == 1) {
             totalBlocks = 0;
             DIR *d;
@@ -228,8 +234,11 @@ void ls(char *command, char *home) {
             if (d) {
                 if (isL == 0) {
                     while ((dir = readdir(d)) != NULL)
-                        if (dir->d_name[0] != '.' || (dir->d_name[0] == '.' && isA == 1))
-                            printf(GREEN"%s\n", dir->d_name);
+                        if (dir->d_name[0] != '.' || (dir->d_name[0] == '.' && isA == 1)) {
+                            print_green();
+                            printf("%s\n", dir->d_name);
+                            print_reset();
+                        }
                 } else {
                     while ((dir = readdir(d)) != NULL)
                         if (dir->d_name[0] != '.' || (dir->d_name[0] == '.' && isA == 1)) {
@@ -241,21 +250,26 @@ void ls(char *command, char *home) {
                             struct LSL_info fileInfo;
                             getFileDetails(fileName, &fileInfo);
 
-                            printf(GREEN"%10s  %10d  %10s  %10s  %10ld  %10s  %s\n", fileInfo.permissions,
+                            print_green();
+                            printf("%10s  %10d  %10s  %10s  %10ld  %10s  %s\n", fileInfo.permissions,
                                    fileInfo.numLinks,
                                    fileInfo.userName,
                                    fileInfo.groupName,
                                    fileInfo.size, fileInfo.date, dir->d_name);
-
+                            print_reset();
                             totalBlocks = totalBlocks + fileInfo.numBlocks;
                         }
-
-                    printf(GREEN"Total %ld\n", totalBlocks / 2);
+                    print_green();
+                    printf("Total %ld\n", totalBlocks / 2);
+                    print_reset();
                 }
                 closedir(d);
 
-            } else
-                printf(RED "No such directory exists\n");
+            } else {
+                print_red();
+                printf("No such directory exists\n");
+                print_reset();
+            }
         } else {
             //dirName[y] is just a file
 
@@ -264,9 +278,14 @@ void ls(char *command, char *home) {
                 struct stat statbuf;
                 int y = stat(fileName, &statbuf);
                 if (y != 0) {
-                    printf(RED "Error: %s: Invalid File/Directory name\n", fileName);
-                } else
-                    printf(YELLOW "%s\n", fileName);
+                    print_red();
+                    printf("Error: %s: Invalid File/Directory name\n", fileName);
+                    print_reset();
+                } else {
+                    print_yellow();
+                    printf("%s\n", fileName);
+                    print_reset();
+                }
             } else {
                 if (fileName[0] != '.' || (fileName[0] == '.' && isA == 1)) {
                     strcpy(fileName, dirName[y]);
@@ -274,11 +293,13 @@ void ls(char *command, char *home) {
                     int k = 0;
                     k = getFileDetails(fileName, &fileInfo);
                     if (k != 0) {
-                        printf(GREEN"%10s  %10d  %10s  %10s  %10ld  %10s  %s\n", fileInfo.permissions,
+                        print_green();
+                        printf("%10s  %10d  %10s  %10s  %10ld  %10s  %s\n", fileInfo.permissions,
                                fileInfo.numLinks,
                                fileInfo.userName,
                                fileInfo.groupName,
                                fileInfo.size, fileInfo.date, dirName[y]);
+                        print_reset();
                     }
                 }
             }

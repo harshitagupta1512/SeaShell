@@ -7,7 +7,9 @@ void getProcessID(char *command, int *pid) {
     }
 
     if (countSpaces(command) != 1) {
+        print_red();
         printf(RED "Invalid number of Arguments\n");
+        print_reset();
         return;
     }
 
@@ -82,8 +84,10 @@ void pinfo(char *command) {
             strcat(processStatus, "+");
 
 
-        printf(GREEN "PID -- %d \nProcess Status -- %s\nMemory -- %ld kB\nExecutable Path -- %s\n", pid, processStatus,
+        print_green();
+        printf("PID -- %d \nProcess Status -- %s\nMemory -- %ld kB\nExecutable Path -- %s\n", pid, processStatus,
                virtual_mem / 1024,
                executable);
+        print_reset();
     }
 }

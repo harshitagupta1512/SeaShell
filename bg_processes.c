@@ -2,10 +2,11 @@
 
 void background(char *command) {
     int pid = fork();
-    if (pid < 0)
-        printf("\x1B[31m" "Fork Failed\n");
-
-    else if (pid > 0) {
+    if (pid < 0) {
+        print_red();
+        printf("Fork Failed\n");
+        print_reset();
+    } else if (pid > 0) {
         //parent process
         int x = countSpaces(command);
         char *argumentPointers[x + 2];
@@ -27,8 +28,9 @@ void background(char *command) {
 
         int p = getpid();
 
-        printf(YELLOW "Background Process PID = %d, System Command = %s\n", p, argumentPointers[0]);
-
+        print_yellow();
+        printf("Background Process PID = %d, System Command = %s\n", p, argumentPointers[0]);
+        print_reset();
         /*Upon success, exec() never returns to the caller.
         It replaces the current process image, so it cannot return anything to the program
         that made the call. If it does return, it means the call failed.
@@ -37,7 +39,9 @@ void background(char *command) {
         int st = execvp(argumentPointers[0], argumentPointers);
 
         if (st < 0) {
-            printf(RED "Execution Failed\n");
+            print_red();
+            printf("Execution Failed\n");
+            print_reset();
             exit(EXIT_FAILURE);
         }
     }

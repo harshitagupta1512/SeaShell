@@ -24,6 +24,8 @@
 #define RED "\x1B[31m"
 #define GREEN "\x1B[32m"
 #define YELLOW "\x1b[33m"
+#define NORMAL  "\x1B[0m"
+#define CYAN "\x1b[36m"
 
 //Global Variables
 char lastVisitedDir[max_size];
@@ -32,7 +34,18 @@ char lastAddedCommand[max_size];
 int shell_pid;
 int saved_stdout;
 int saved_stdin;
+int isRe;
+int isPi;
 
+void print_green();
+
+void print_yellow();
+
+void print_reset();
+
+void print_red();
+
+void print_cyan();
 
 void prompt(char *home);
 
@@ -155,4 +168,6 @@ void deleteEleByPID();
 //----------------------------------------//
 #endif //OSN_ASSI2_DEF_H
 
-// ctrl - Z
+// Fix job numbers
+// Implement replay
+

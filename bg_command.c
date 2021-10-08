@@ -5,7 +5,9 @@ void bg_command(char *command) {
     // Changes the state of a stopped background job to running (in the background).
     int j = getJ(command);
     if (j < 0 || j == 0) {
-        perror(RED "Invalid Job Number\n");
+        print_red();
+        perror("Invalid Job Number\n");
+        print_reset();
         return;
     }
 
@@ -13,7 +15,9 @@ void bg_command(char *command) {
     pid = getBgPIDbyJ(j);
 
     if (pid <= 0) {
-        perror(RED "Invalid Command");
+        print_red();
+        perror("Invalid Command");
+        print_reset();
         return;
     }
 

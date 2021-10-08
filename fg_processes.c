@@ -8,19 +8,25 @@ void foreground(char *command) {
     argument_pointers[x + 1] = NULL;
     pid_t pid = 0;
     pid = fork();
-    if (pid < 0)
-        printf(RED "Fork Failed\n");
-    else if (pid > 0) {
+    if (pid < 0) {
+        print_red();
+        printf("Fork Failed\n");
+        print_reset();
+    } else if (pid > 0) {
         //parent process
         dup2(saved_stdout, 1);
         dup2(saved_stdin, 0);
-
         signal(SIGTTIN, SIG_IGN);
         signal(SIGTTOU, SIG_IGN);
         setpgid(pid, 0);
         tcsetpgrp(STDIN_FILENO, pid);
         int status;
         waitpid(pid, &status, WUNTRACED);
+        if (WIFSTOPPED(status)) {
+            char pname[max_size];
+            strcpy(pname, argument_pointers[0]);
+            insertEle(pname, pid);
+        }
         pid_t pgid_parent = getpgrp();
         tcsetpgrp(STDIN_FILENO, pgid_parent);
         signal(SIGTTIN, SIG_DFL);

@@ -1,18 +1,15 @@
 #include "def.h"
 
-Queue initQueue()
-{
-    Queue D = (Queue)malloc(sizeof(struct Queue));
+Queue initQueue() {
+    Queue D = (Queue) malloc(sizeof(struct Queue));
     D->Front = NULL;
     D->Rear = NULL;
     D->NumEle = 0;
     return D;
 }
 
-void Inject(Queue D, char* x)
-{
-    if(strcmp(lastAddedCommand, x) != 0)
-    {
+void Inject(Queue D, char *x) {
+    if (strcmp(lastAddedCommand, x) != 0) {
         PtrQueueEle P = (PtrQueueEle) malloc(sizeof(QueueEle));
         strcpy(P->data, x);
         P->next = NULL;
@@ -33,40 +30,32 @@ void Inject(Queue D, char* x)
     }
 }
 
-void Pop(Queue D)
-{
-    if (!IsEmpty(D))
-    {
+void Pop(Queue D) {
+    if (!IsEmpty(D)) {
 
-        if (D->Front == D->Rear)
-        {
+        if (D->Front == D->Rear) {
             D->Rear = NULL;
             D->Front = NULL;
             D->NumEle--;
-        }
-        else
-        {
+        } else {
             D->Front = D->Front->next;
             D->Front->prev = NULL;
             D->NumEle--;
         }
-    }
-    else
-    {
-        printf(RED "Deletion not Possible : The Queue is Empty\n");
+    } else {
+        print_red();
+        printf("Deletion not Possible : The Queue is Empty\n");
+        print_reset();
     }
 }
 
-int IsEmpty(Queue D)
-{
+int IsEmpty(Queue D) {
     return D->NumEle == 0;
 }
 
-void deleteQueue(Queue D)
-{
+void deleteQueue(Queue D) {
     PtrQueueEle Curr = D->Front;
-    while (Curr->next != NULL)
-    {
+    while (Curr->next != NULL) {
         PtrQueueEle Temp = Curr;
         free(Temp);
         Curr = Curr->next;
@@ -76,43 +65,42 @@ void deleteQueue(Queue D)
     D->Rear = NULL;
 }
 
-void printQueue(Queue D, int number)
-{
+void printQueue(Queue D, int number) {
     PtrQueueEle Curr = D->Front;
 
     if (D->NumEle == 0)
         printf(" \n");
 
-    else
-    {
-        if(D->NumEle <= number)
-        {
+    else {
+        if (D->NumEle <= number) {
             int i = 1;
-            while (Curr->next != NULL)
-            {
-                printf(GREEN "[%d]    %s\n", i, Curr->data);
+            while (Curr->next != NULL) {
+                print_green();
+                printf("[%d]    %s\n", i, Curr->data);
+                print_reset();
                 Curr = Curr->next;
                 i++;
             }
-        printf(GREEN "[%d]    %s\n", i, Curr->data);
-
-        }
-        else
-        {
+            print_green();
+            printf("[%d]    %s\n", i, Curr->data);
+            print_reset();
+        } else {
             int n = D->NumEle;
-            for(int j = 1; j <= n - number ; j++)
-            {
-                Curr = Curr-> next;
+            for (int j = 1; j <= n - number; j++) {
+                Curr = Curr->next;
             }
 
             int i = 1;
-            while (Curr->next != NULL)
-            {
-                printf(GREEN "[%d]    %s\n", i, Curr->data);
+            while (Curr->next != NULL) {
+                print_green();
+                printf("[%d]    %s\n", i, Curr->data);
+                print_reset();
                 Curr = Curr->next;
                 i++;
             }
-            printf(GREEN "[%d]    %s\n", i, Curr->data);
+            print_green();
+            printf("[%d]    %s\n", i, Curr->data);
+            print_reset();
         }
 
     }
