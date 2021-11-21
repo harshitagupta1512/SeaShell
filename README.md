@@ -49,6 +49,8 @@ SeaShell supports `;` separated list of commands. SeaShell also handles random m
 
 11. `bg` takes `job number` as a command line argument and changes the state of the background job corresponding to the `job number` from `stopped` to `running` (in the background). If the process was already running in the background, it has no effects.
 
+12. `replay` command takes 3 command line arguments, `command`, `interval` and `period`. It executes `command` in a fixed `interval` of time for a certain `period`. 
+
 #### System Commands - Foreground and Background Processes
 
 Other than the builtin commands, SeaShell executes all other system commands either in foreground or background. It supports the `&` operator which lets a program run in the background after printing the `pid` of the newly created process. Running a process in background implies that the shell will spawn that process and doesn't wait for the process to exit. It will keep taking other user commands. SeaShell can handle multiple background processes at a time. This implies that your shell will spawn that process and doesn't wait for the
@@ -120,7 +122,11 @@ If no foreground process is running on the shell, it has no effect.
 
 23. `sig.c` -  has the function to execute the builtin `sig` command.
 
-24. `linkedList.c` - has the implementation of a `linked list` data structure used to maintain the list of background processes.
+24. `replay.c` -  has the function to execute the builtin `replay` command.
+
+25. `linkedList.c` - has the implementation of a `linked list` data structure used to maintain the list of background processes.
+
+26.`helper.c` - has functions to add colours in output.
 
 ## Assumptions/Limitations
 
